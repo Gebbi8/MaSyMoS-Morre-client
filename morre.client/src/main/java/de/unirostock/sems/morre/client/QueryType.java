@@ -1,6 +1,5 @@
 package de.unirostock.sems.morre.client;
 
-import java.util.Map;
 
 public class QueryType {
 

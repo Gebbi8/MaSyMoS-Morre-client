@@ -8,7 +8,7 @@ public class PersonResult {
 	private Person person;
 	private List<String> relatedModelsUri;
 	
-	public PersonResult(float score, Person person, 	List<String> relatedModelsUri) {
+	public PersonResult(float score, Person person, List<String> relatedModelsUri) {
 		super();
 		this.score = score;
 		this.person = person;
