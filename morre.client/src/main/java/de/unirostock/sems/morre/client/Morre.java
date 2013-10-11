@@ -1,5 +1,7 @@
 package de.unirostock.sems.morre.client;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
@@ -26,8 +28,10 @@ public interface Morre {
 	 * 
 	 * @param queryType
 	 * @return
+	 * @throws MalformedURLException 
+	 * @throws IOException 
 	 */
-	public List<String> getQueryFeatures( String queryType );
+	public List<String> getQueryFeatures( String queryType ) throws MalformedURLException, IOException;
 	
 	/**
 	 * Performs a more complex query of the given type

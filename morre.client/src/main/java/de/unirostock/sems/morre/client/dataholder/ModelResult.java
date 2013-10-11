@@ -4,20 +4,19 @@ public class ModelResult {
 
 	private String modelName;
 	private float score;
-	private String modelId;
-	private long databaseId;
-	private String documentUri;
+	private String modelID;
+	private long databaseID;
+	private String documentURI;
 	private String filename;
 	
 	
-	public ModelResult(String modelName, float score, String modelId,
-			long databaseId, String documentUri, String filename) {
+	public ModelResult(String modelName, float score, String modelID, long databaseID, String documentURI, String filename) {
 		super();
 		this.modelName = modelName;
 		this.score = score;
-		this.modelId = modelId;
-		this.databaseId = databaseId;
-		this.documentUri = documentUri;
+		this.modelID = modelID;
+		this.databaseID = databaseID;
+		this.documentURI = documentURI;
 		this.filename = filename;
 	}
 
@@ -42,33 +41,33 @@ public class ModelResult {
 	}
 
 
-	public String getModelId() {
-		return modelId;
+	public String getModelID() {
+		return modelID;
 	}
 
 
-	public void setModelId(String modelId) {
-		this.modelId = modelId;
+	public void setModelID(String modelId) {
+		this.modelID = modelId;
 	}
 
 
-	public long getDatabaseId() {
-		return databaseId;
+	public long getDatabaseID() {
+		return databaseID;
 	}
 
 
-	public void setDatabaseId(long databaseId) {
-		this.databaseId = databaseId;
+	public void setDatabaseID(long databaseId) {
+		this.databaseID = databaseId;
 	}
 
 
-	public String getDocumentUri() {
-		return documentUri;
+	public String getDocumentURI() {
+		return documentURI;
 	}
 
 
-	public void setDocumentUri(String documentUri) {
-		this.documentUri = documentUri;
+	public void setDocumentURI(String documentUri) {
+		this.documentURI = documentUri;
 	}
 
 
@@ -83,7 +82,7 @@ public class ModelResult {
 
 	@Override
 	public String toString() {
-		return "ModelResult [modelName=" + modelName + ", modelId=" + modelId + "]";
+		return "ModelResult [modelName=" + modelName + ", modelId=" + modelID + "]";
 	}
 	
 }
