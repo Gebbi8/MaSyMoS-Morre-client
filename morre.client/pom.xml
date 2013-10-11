@@ -12,7 +12,7 @@
 
 	<scm>
 		<connection>GIT</connection>
-		<url>ssh://sems.uni-rostock.de/xmlfs-client</url>
+		<url>ssh://sems.uni-rostock.de/morre-client</url>
 		<developerConnection>Martin Peters</developerConnection>
 	</scm>
 
