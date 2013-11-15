@@ -3,6 +3,7 @@ package de.unirostock.sems.morre.client.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -32,8 +33,9 @@ import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
 import de.unirostock.sems.morre.client.dataholder.PersonResult;
 
-public class HttpMorreClient implements Morre {
+public class HttpMorreClient implements Morre, Serializable {
 
+	private static final long serialVersionUID = 6215972631957486031L;
 	private final Log log = LogFactory.getLog( getClass() );
 
 	private URL morreUrl = null;

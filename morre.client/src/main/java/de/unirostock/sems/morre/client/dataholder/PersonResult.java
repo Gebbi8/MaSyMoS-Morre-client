@@ -1,9 +1,12 @@
 package de.unirostock.sems.morre.client.dataholder;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PersonResult {
+public class PersonResult implements Serializable {
 
+	private static final long serialVersionUID = -7962256029915028650L;
+	
 	private float score;
 	private Person person;
 	private List<String> relatedModelsUri;

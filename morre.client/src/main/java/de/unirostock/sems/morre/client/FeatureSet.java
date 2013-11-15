@@ -1,13 +1,15 @@
 package de.unirostock.sems.morre.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class FeatureSet {
+public class FeatureSet implements Serializable {
 	
+	private static final long serialVersionUID = 2819005447572420712L;
 	private Map<String, String> features;
 	
 	public FeatureSet() {

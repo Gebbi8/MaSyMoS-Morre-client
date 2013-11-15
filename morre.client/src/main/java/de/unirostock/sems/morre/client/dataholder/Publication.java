@@ -1,8 +1,11 @@
 package de.unirostock.sems.morre.client.dataholder;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Publication {
+public class Publication implements Serializable {
+	
+	private static final long serialVersionUID = -757552167110985918L;
 	
 	private String title;
 	private String journal;

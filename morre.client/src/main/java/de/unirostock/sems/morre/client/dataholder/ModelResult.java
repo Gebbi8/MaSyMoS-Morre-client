@@ -1,7 +1,11 @@
 package de.unirostock.sems.morre.client.dataholder;
 
-public class ModelResult extends Model {
+import java.io.Serializable;
 
+public class ModelResult extends Model implements Comparable<ModelResult>, Serializable {
+
+	private static final long serialVersionUID = 2024032602660507720L;
+	
 	private float score;
 	
 	public ModelResult(String modelName, float score, String modelID, long databaseID, String documentURI, String filename) {
@@ -20,6 +24,11 @@ public class ModelResult extends Model {
 	@Override
 	public String toString() {
 		return "ModelResult [modelName=" + modelName + ", modelId=" + modelID + ", score=" + score + "]";
+	}
+
+	@Override
+	public int compareTo(ModelResult model) {
+		return Float.compare( score, model.getScore() );
 	}
 	
 }

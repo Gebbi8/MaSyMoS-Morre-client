@@ -1,8 +1,11 @@
 package de.unirostock.sems.morre.client.dataholder;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class AnnotationResult {
+public class AnnotationResult implements Serializable {
+	
+	private static final long serialVersionUID = -3824665970559332181L;
 	
 	private float score;
 	private String uri;

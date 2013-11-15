@@ -1,7 +1,11 @@
 package de.unirostock.sems.morre.client.dataholder;
 
-public class Person {
+import java.io.Serializable;
 
+public class Person implements Serializable {
+
+	private static final long serialVersionUID = 7317019489722179229L;
+	
 	private String firstName;
 	private String lastName;
 	private String email;

@@ -1,6 +1,7 @@
 package de.unirostock.sems.morre.client;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import de.unirostock.sems.morre.client.dataholder.PersonResult;
  * @author Martin Peters
  *
  */
-public interface Morre {
+public interface Morre extends Serializable {
 	
 	/**
 	 * Searches for a model on the basis of a simple query
