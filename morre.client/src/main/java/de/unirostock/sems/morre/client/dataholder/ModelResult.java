@@ -20,6 +20,10 @@ public class ModelResult extends Model implements Comparable<ModelResult>, Seria
 	public void setScore(float score) {
 		this.score = score;
 	}
+	
+	public Model getModel() {
+		return (Model) this;
+	}
 
 	@Override
 	public String toString() {
@@ -28,7 +32,7 @@ public class ModelResult extends Model implements Comparable<ModelResult>, Seria
 
 	@Override
 	public int compareTo(ModelResult model) {
-		return Float.compare( score, model.getScore() );
+		return Float.compare( model.getScore(), score );
 	}
 	
 }

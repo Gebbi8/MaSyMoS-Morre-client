@@ -24,6 +24,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import de.unirostock.sems.morre.client.FeatureSet;
@@ -32,6 +33,9 @@ import de.unirostock.sems.morre.client.QueryType;
 import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
 import de.unirostock.sems.morre.client.dataholder.PersonResult;
+import de.unirostock.sems.morre.client.exception.MorreClientException;
+import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
+import de.unirostock.sems.morre.client.exception.MorreException;
 
 public class HttpMorreClient implements Morre, Serializable {
 
@@ -50,6 +54,9 @@ public class HttpMorreClient implements Morre, Serializable {
 	private final String KEY_KEYWORDS = "keywords";
 	private final String KEY_FEATURES = "features";
 
+	private final String ERROR_KEY_RESULTS = "#Results";
+	private final String ERROR_KEY_EXCEPTION = "Exception";
+
 	public HttpMorreClient(String morreUrl) throws MalformedURLException {
 		this.morreUrl = new URL(morreUrl);
 		httpClient = HttpClientBuilder.create().build();
@@ -62,63 +69,95 @@ public class HttpMorreClient implements Morre, Serializable {
 	}
 
 	@Override
-	public List<ModelResult> modelQuery(String query) {
-		
+	public List<ModelResult> modelQuery(String query) throws MorreClientException, MorreCommunicationException, MorreException {
+
 		FeatureSet features = new FeatureSet();
 		features.set( "keyword", query );
 		
-		String resultString = null;
-		try {
-			resultString = doQuery( QueryType.MODEL_QUERY, features);
-		} catch (MalformedURLException e) {
-
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		List<ModelResult> result = gson.fromJson(resultString, modelResultType);
-		return result;
+		return doModelQuery(QueryType.MODEL_QUERY, features);
 	}
 
 	@Override
-	public List<String> getQueryFeatures(String queryType) throws IOException, IllegalStateException {
+	public List<String> getQueryFeatures(String queryType) throws MorreException, MorreClientException, MorreCommunicationException {
+		
+		try {
+			HttpGet request = new HttpGet( new URL(morreUrl, queryType).toString() );
+			HttpResponse response = httpClient.execute(request);
 
-		HttpGet request = new HttpGet( new URL(morreUrl, queryType).toString() );
-		HttpResponse response = httpClient.execute(request);
-
-		// reads in the result
-		StringBuilder result = new StringBuilder();
-		BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-		String line = "";
-		while ((line = resultReader.readLine()) != null) {
-			//append              
-			result.append(line);
+			// reads in the result
+			StringBuilder result = new StringBuilder();
+			BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			String line = "";
+			while ((line = resultReader.readLine()) != null) {
+				//append              
+				result.append(line);
+			}
+			
+			List<String> featureList = gson.fromJson(result.toString(), featureListType);
+			
+			return featureList;
+		} catch (JsonSyntaxException e) {
+			throw new MorreException("Can not parse the FeatureSet List!", e);
+		} catch (MalformedURLException e) {
+			// Wrong formatted URL.
+			throw new MorreClientException("Exception while building the request url", e);
+		} catch (IOException e) {
+			// Something went wrong with the communication
+			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
 		
-		return gson.fromJson(result.toString(), featureListType);
+		
 	}
 
 	@Override
-	public List<ModelResult> doModelQuery(String queryType, FeatureSet features) {
+	public List<ModelResult> doModelQuery(String queryType, FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		// perform the query
+		String resultString = doQuery(queryType, features);
 
-		String resultString = null;
+		// Lets try to parse the shit out of it!
+
+		List<ModelResult> result = null;
 		try {
-			resultString = doQuery(queryType, features);
-		} catch (MalformedURLException e) {
+			// trying to parse the result correctly
+			result = gson.fromJson(resultString, modelResultType);
+		}
+		catch (JsonSyntaxException e) {
+			// **** first catch block ****
+			// first attempt failed -> try to get a error message out of the result
 
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			try {
+				List<String> errorResult = gson.fromJson(resultString, featureListType);
+
+				if( errorResult.get(0).equals(ERROR_KEY_RESULTS) ) {
+					// A result return. If the second value is null, the database could not find an entry.
+					if( errorResult.get(1).equals("0") ) {
+						// null for no entry found!
+						// TODO think about the null return. Shouldn't we just return an empty List?
+						return null;
+					}
+
+				}
+				else if( errorResult.get(0).equals(ERROR_KEY_EXCEPTION) ) {
+					// We've got a database exception! Let's throw it!
+					if( errorResult.size() >= 2 )
+						// there is a second parameter, specifying the exact error
+						throw new MorreException( errorResult.get(1) );
+					else
+						// no explaining parameter, just an error.
+						throw new MorreException();
+				}
+
+			}
+			catch (JsonSyntaxException e2) {
+				// second attempt to parse failed, two. Now our fates rests in God's hands... (... or we just throw an exception)
+				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON!", e2);
+			}
+
+			// **** first catch block ****
 		}
 
-		List<ModelResult> result = gson.fromJson(resultString, modelResultType);
+
 		return result;
 	}
 
@@ -135,37 +174,47 @@ public class HttpMorreClient implements Morre, Serializable {
 	}
 
 
-	private String doQuery( String queryType, FeatureSet features ) throws MalformedURLException, ClientProtocolException, IOException {
+	private String doQuery( String queryType, FeatureSet features ) throws MorreClientException, MorreCommunicationException {
+		
+		try {
+			// Serialize the feature set
 
-		// Serialize the feature set
+			Entry<List<String>, List<String>> separateLists = features.getFeatures();
+			HashMap<String, JsonElement> complete = new HashMap<String, JsonElement>();
 
-		Entry<List<String>, List<String>> separateLists = features.getFeatures();
-		HashMap<String, JsonElement> complete = new HashMap<String, JsonElement>();
+			// First parse the feature and value list
+			complete.put( KEY_FEATURES, gson.toJsonTree( separateLists.getKey(), singleListType ) );
+			complete.put( KEY_KEYWORDS, gson.toJsonTree( separateLists.getValue(), singleListType ) );
 
-		// First parse the feature and value list
-		complete.put( KEY_FEATURES, gson.toJsonTree( separateLists.getKey(), singleListType ) );
-		complete.put( KEY_KEYWORDS, gson.toJsonTree( separateLists.getValue(), singleListType ) );
+			String jsonFeatures = gson.toJson( complete );
 
-		String jsonFeatures = gson.toJson( complete );
+			// generates the request
+			HttpPost request = new HttpPost( new URL(morreUrl, queryType).toString() );
+			// adds the json string as package
+			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
 
-		// generates the request
-		HttpPost request = new HttpPost( new URL(morreUrl, queryType).toString() );
-		// adds the json string as package
-		request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
+			// execute!
+			HttpResponse response = httpClient.execute(request);
 
-		// execute!
-		HttpResponse response = httpClient.execute(request);
-
-		// reads in the result
-		StringBuilder result = new StringBuilder();
-		BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-		String line = "";
-		while ((line = resultReader.readLine()) != null) {
-			//append              
-			result.append(line);
+			// reads in the result
+			StringBuilder result = new StringBuilder();
+			BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			String line = "";
+			while ((line = resultReader.readLine()) != null) {
+				//append              
+				result.append(line);
+			}
+			
+			return result.toString();
+		} catch (MalformedURLException e) {
+			// Wrong formatted URL. We can definitely blame the library user for this.
+			// Exception the awesome library developer uses it by himself, than we have to blame someone else... ;)
+			throw new MorreClientException("Exception while building the request url", e);
+		} catch (IOException e) {
+			// Something went wrong with the communication
+			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
 
-		return result.toString();
 	}
 
 }

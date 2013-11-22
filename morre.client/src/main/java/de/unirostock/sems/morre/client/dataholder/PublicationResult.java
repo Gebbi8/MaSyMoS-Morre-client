@@ -3,7 +3,7 @@ package de.unirostock.sems.morre.client.dataholder;
 import java.io.Serializable;
 import java.util.List;
 
-public class PublicationResult implements Serializable {
+public class PublicationResult implements Serializable, Comparable<PublicationResult> {
 	
 	private static final long serialVersionUID = 7017246742229358253L;
 	
@@ -46,6 +46,11 @@ public class PublicationResult implements Serializable {
 	public String toString() {
 		return "PublicationResult [score=" + score + ", publication="
 				+ publication + "]";
+	}
+
+	@Override
+	public int compareTo(PublicationResult publication) {
+		return Float.compare(publication.getScore(), score);
 	}
 	
 }

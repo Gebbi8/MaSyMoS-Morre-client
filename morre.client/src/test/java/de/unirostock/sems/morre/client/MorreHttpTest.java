@@ -11,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
+import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
+import de.unirostock.sems.morre.client.exception.MorreException;
 import de.unirostock.sems.morre.client.impl.HttpMorreClient;
 
 @RunWith(JUnit4.class)
@@ -24,7 +26,7 @@ public class MorreHttpTest {
 	}
 	
 	@Test
-	public void testComplexModelQuery() {
+	public void testComplexModelQuery() throws MorreCommunicationException, MorreException {
 		
 		FeatureSet features = new FeatureSet();
 		features.set("FAMILYNAME", "Lloyd");
@@ -35,7 +37,7 @@ public class MorreHttpTest {
 	}
 	
 	@Test
-	public void testGettingFeatures() throws MalformedURLException, IOException {
+	public void testGettingFeatures() throws MorreException, MalformedURLException, IllegalStateException, IOException {
 		
 		String[] queries = { QueryType.ANNOTATION_MODEL_QUERY, QueryType.ANNOTATION_QUERY, QueryType.CELLML_MODEL_QUERY, QueryType.MODEL_QUERY, QueryType.PERSON_MODEL_QUERY,
 				QueryType.PERSON_QUERY, QueryType.PUBLICATION_MODEL_QUERY, QueryType.PUBLICATION_QUERY, QueryType.SIMPLE_CELLML_MODEL_QUERY };
