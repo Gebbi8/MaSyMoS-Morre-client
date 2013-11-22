@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -128,8 +129,12 @@ public class HttpMorreClient implements Morre, Serializable {
 
 			try {
 				List<String> errorResult = gson.fromJson(resultString, featureListType);
-
-				if( errorResult.get(0).equals(ERROR_KEY_RESULTS) ) {
+				
+				if( errorResult == null || errorResult.isEmpty() ) {
+					// the errorResult List is empty
+					throw new MorreException( "Empty result, no error description." );
+				}				
+				else if( errorResult.get(0).equals(ERROR_KEY_RESULTS) ) {
 					// A result return. If the second value is null, the database could not find an entry.
 					if( errorResult.get(1).equals("0") ) {
 						// null for no entry found!
@@ -147,6 +152,10 @@ public class HttpMorreClient implements Morre, Serializable {
 						// no explaining parameter, just an error.
 						throw new MorreException();
 				}
+				else {
+					// Something unknown was returned
+					throw new MorreException( MessageFormat.format("Unknown Result was returned by MORRE: {0}", errorResult) );
+				} 
 
 			}
 			catch (JsonSyntaxException e2) {
