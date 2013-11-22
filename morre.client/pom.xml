@@ -4,7 +4,7 @@
 
 	<groupId>de.unirostock.sems</groupId>
 	<artifactId>morre.client</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>morre.client</name>
@@ -133,7 +133,7 @@
 	<distributionManagement>
 		<downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>
 		<snapshotRepository>
-			<uniqueVersion>false</uniqueVersion>
+			<uniqueVersion>true</uniqueVersion>
 			<id>sems-maven-repository</id>
 			<name>SEMS Maven Release Repository</name>
 			<url>scp://mvn.sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
@@ -141,7 +141,7 @@
 		</snapshotRepository>
 
 		<repository>
-			<uniqueVersion>false</uniqueVersion>
+			<uniqueVersion>true</uniqueVersion>
 			<id>sems-maven-repository</id>
 			<name>Enterprise Systems Maven Repository</name>
 			<url>scp://mvn.sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>

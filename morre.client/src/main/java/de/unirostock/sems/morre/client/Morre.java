@@ -8,6 +8,9 @@ import java.util.List;
 import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
 import de.unirostock.sems.morre.client.dataholder.PersonResult;
+import de.unirostock.sems.morre.client.exception.MorreClientException;
+import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
+import de.unirostock.sems.morre.client.exception.MorreException;
 
 /**
  * Interface for interacting with the <a href="http://sems.uni-rostock.de/projects/morre/">MORRE</a> database API
@@ -21,8 +24,10 @@ public interface Morre extends Serializable {
 	 * 
 	 * @param query
 	 * @return List of ModelResults
+	 * @throws MorreCommunicationException 
+	 * @throws MorreClientException 
 	 */
-	public List<ModelResult> modelQuery( String query );
+	public List<ModelResult> modelQuery( String query ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
 	 * Returns the available features for a given query type
@@ -31,8 +36,10 @@ public interface Morre extends Serializable {
 	 * @return
 	 * @throws MalformedURLException 
 	 * @throws IOException 
+	 * @throws MorreException 
+	 * @throws IllegalStateException 
 	 */
-	public List<String> getQueryFeatures( String queryType ) throws MalformedURLException, IOException;
+	public List<String> getQueryFeatures( String queryType ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
 	 * Performs a more complex query of the given type
@@ -41,8 +48,10 @@ public interface Morre extends Serializable {
 	 * @param queryType
 	 * @param features
 	 * @return
+	 * @throws MorreCommunicationException 
+	 * @throws MorreException 
 	 */
-	public List<ModelResult> doModelQuery( String queryType, FeatureSet features );
+	public List<ModelResult> doModelQuery( String queryType, FeatureSet features ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
 	 * Searches for a Person on the basis of the given features
@@ -51,7 +60,7 @@ public interface Morre extends Serializable {
 	 * @param features
 	 * @return
 	 */
-	public List<PersonResult> doPersonQuery( FeatureSet features );
+	public List<PersonResult> doPersonQuery( FeatureSet features ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/** 
 	 * Searches for Annotations on the basis of the gives features
@@ -60,6 +69,6 @@ public interface Morre extends Serializable {
 	 * @param features
 	 * @return
 	 */
-	public List<AnnotationResult> doAnnotationQuery( FeatureSet features );
+	public List<AnnotationResult> doAnnotationQuery( FeatureSet features ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 }

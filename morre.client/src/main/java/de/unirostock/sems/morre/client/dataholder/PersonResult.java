@@ -3,7 +3,7 @@ package de.unirostock.sems.morre.client.dataholder;
 import java.io.Serializable;
 import java.util.List;
 
-public class PersonResult implements Serializable {
+public class PersonResult implements Serializable, Comparable<PersonResult> {
 
 	private static final long serialVersionUID = -7962256029915028650L;
 	
@@ -45,6 +45,11 @@ public class PersonResult implements Serializable {
 	@Override
 	public String toString() {
 		return "PersonResult [score=" + score + ", person=" + person + "]";
+	}
+
+	@Override
+	public int compareTo(PersonResult person) {
+		return Float.compare(person.getScore(), score);
 	}
 	
 	
