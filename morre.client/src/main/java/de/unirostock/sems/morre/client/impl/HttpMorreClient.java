@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -47,10 +48,12 @@ public class HttpMorreClient implements Morre, Serializable {
 	private HttpClient httpClient = null;
 	private Gson gson = null;
 
-	private java.lang.reflect.Type singleListType;
-	private java.lang.reflect.Type completeType;
-	private java.lang.reflect.Type modelResultType;
-	private java.lang.reflect.Type featureListType;
+	private Type singleListType;
+	private Type completeType;
+	private Type featureListType;
+	private Type modelResultType;
+	private Type personResultType;
+	private Type annotationResultType;
 
 	private final String KEY_KEYWORDS = "keywords";
 	private final String KEY_FEATURES = "features";
@@ -65,8 +68,11 @@ public class HttpMorreClient implements Morre, Serializable {
 
 		completeType = new TypeToken<List<Map<String, JsonElement>>>(){}.getType();
 		singleListType = new TypeToken<List<String>>(){}.getType();
-		modelResultType = new TypeToken<List<ModelResult>>(){}.getType();
 		featureListType = new TypeToken<List<String>>(){}.getType();
+
+		modelResultType = new TypeToken<List<ModelResult>>(){}.getType();
+		personResultType = new TypeToken<List<PersonResult>>(){}.getType();
+		annotationResultType = new TypeToken<List<AnnotationResult>>(){}.getType();
 	}
 
 	@Override
@@ -74,13 +80,13 @@ public class HttpMorreClient implements Morre, Serializable {
 
 		FeatureSet features = new FeatureSet();
 		features.set( "keyword", query );
-		
+
 		return doModelQuery(QueryType.MODEL_QUERY, features);
 	}
 
 	@Override
 	public List<String> getQueryFeatures(String queryType) throws MorreException, MorreClientException, MorreCommunicationException {
-		
+
 		try {
 			HttpGet request = new HttpGet( new URL(morreUrl, queryType).toString() );
 			HttpResponse response = httpClient.execute(request);
@@ -93,9 +99,9 @@ public class HttpMorreClient implements Morre, Serializable {
 				//append              
 				result.append(line);
 			}
-			
+
 			List<String> featureList = gson.fromJson(result.toString(), featureListType);
-			
+
 			return featureList;
 		} catch (JsonSyntaxException e) {
 			throw new MorreException("Can not parse the FeatureSet List!", e);
@@ -106,22 +112,36 @@ public class HttpMorreClient implements Morre, Serializable {
 			// Something went wrong with the communication
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
-		
-		
+
+
 	}
 
 	@Override
 	public List<ModelResult> doModelQuery(String queryType, FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
-		
+		return performQuery(queryType, features, modelResultType);
+	}
+
+	@Override
+	public List<PersonResult> doPersonQuery(FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
+		return performQuery(QueryType.PERSON_QUERY, features, personResultType);
+	}
+
+	@Override
+	public List<AnnotationResult> doAnnotationQuery(FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
+		return performQuery(QueryType.ANNOTATION_QUERY, features, annotationResultType);
+	}
+
+	private <R> List<R> performQuery( String queryType, FeatureSet features, Type parseType ) throws MorreClientException, MorreCommunicationException, MorreException {
+
 		// perform the query
 		String resultString = doQuery(queryType, features);
 
 		// Lets try to parse the shit out of it!
 
-		List<ModelResult> result = null;
+		List<R> result = null;
 		try {
 			// trying to parse the result correctly
-			result = gson.fromJson(resultString, modelResultType);
+			result = gson.fromJson(resultString, parseType);
 		}
 		catch (JsonSyntaxException e) {
 			// **** first catch block ****
@@ -165,26 +185,12 @@ public class HttpMorreClient implements Morre, Serializable {
 
 			// **** first catch block ****
 		}
-
-
+		
 		return result;
 	}
-
-	@Override
-	public List<PersonResult> doPersonQuery(FeatureSet features) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<AnnotationResult> doAnnotationQuery(FeatureSet features) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
+	
 	private String doQuery( String queryType, FeatureSet features ) throws MorreClientException, MorreCommunicationException {
-		
+
 		try {
 			// Serialize the feature set
 
@@ -213,7 +219,7 @@ public class HttpMorreClient implements Morre, Serializable {
 				//append              
 				result.append(line);
 			}
-			
+
 			return result.toString();
 		} catch (MalformedURLException e) {
 			// Wrong formatted URL. We can definitely blame the library user for this.
@@ -223,7 +229,6 @@ public class HttpMorreClient implements Morre, Serializable {
 			// Something went wrong with the communication
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
-
 	}
 
 }
