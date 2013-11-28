@@ -42,6 +42,7 @@ import de.unirostock.sems.morre.client.exception.MorreException;
 public class HttpMorreClient implements Morre, Serializable {
 
 	private static final long serialVersionUID = 6215972631957486031L;
+	
 	private final Log log = LogFactory.getLog( getClass() );
 
 	private URL morreUrl = null;
@@ -49,7 +50,7 @@ public class HttpMorreClient implements Morre, Serializable {
 	private Gson gson = null;
 
 	private Type singleListType;
-	private Type completeType;
+//	private Type completeType;
 	private Type featureListType;
 	private Type modelResultType;
 	private Type personResultType;
@@ -57,6 +58,7 @@ public class HttpMorreClient implements Morre, Serializable {
 
 	private final String KEY_KEYWORDS = "keywords";
 	private final String KEY_FEATURES = "features";
+	private static final String KEY_SINGLE_KEYWORD = "keyword";
 
 	private final String ERROR_KEY_RESULTS = "#Results";
 	private final String ERROR_KEY_EXCEPTION = "Exception";
@@ -66,7 +68,7 @@ public class HttpMorreClient implements Morre, Serializable {
 		httpClient = HttpClientBuilder.create().build();
 		gson = new Gson();
 
-		completeType = new TypeToken<List<Map<String, JsonElement>>>(){}.getType();
+//		completeType = new TypeToken<List<Map<String, JsonElement>>>(){}.getType();
 		singleListType = new TypeToken<List<String>>(){}.getType();
 		featureListType = new TypeToken<List<String>>(){}.getType();
 
@@ -77,11 +79,8 @@ public class HttpMorreClient implements Morre, Serializable {
 
 	@Override
 	public List<ModelResult> modelQuery(String query) throws MorreClientException, MorreCommunicationException, MorreException {
-
-		FeatureSet features = new FeatureSet();
-		features.set( "keyword", query );
-
-		return doModelQuery(QueryType.MODEL_QUERY, features);
+		String resultString = performSimpleQuery(QueryType.MODEL_QUERY, query);
+		return parseQueryResult(resultString, modelResultType);
 	}
 
 	@Override
@@ -118,23 +117,26 @@ public class HttpMorreClient implements Morre, Serializable {
 
 	@Override
 	public List<ModelResult> doModelQuery(String queryType, FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
-		return performQuery(queryType, features, modelResultType);
+		// perform the query
+		String resultString = performQuery(queryType, features);
+		return parseQueryResult(resultString, modelResultType);
 	}
 
 	@Override
 	public List<PersonResult> doPersonQuery(FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
-		return performQuery(QueryType.PERSON_QUERY, features, personResultType);
+		// perform the query
+		String resultString = performQuery(QueryType.PERSON_QUERY, features);
+		return parseQueryResult(resultString, personResultType);
 	}
 
 	@Override
 	public List<AnnotationResult> doAnnotationQuery(FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
-		return performQuery(QueryType.ANNOTATION_QUERY, features, annotationResultType);
+		// perform the query
+		String resultString = performQuery(QueryType.ANNOTATION_QUERY, features);
+		return parseQueryResult(resultString, annotationResultType);
 	}
 
-	private <R> List<R> performQuery( String queryType, FeatureSet features, Type parseType ) throws MorreClientException, MorreCommunicationException, MorreException {
-
-		// perform the query
-		String resultString = doQuery(queryType, features);
+	private <R> List<R> parseQueryResult( String resultString, Type parseType ) throws MorreClientException, MorreCommunicationException, MorreException {
 
 		// Lets try to parse the shit out of it!
 
@@ -189,7 +191,7 @@ public class HttpMorreClient implements Morre, Serializable {
 		return result;
 	}
 	
-	private String doQuery( String queryType, FeatureSet features ) throws MorreClientException, MorreCommunicationException {
+	private String performQuery( String queryType, FeatureSet features ) throws MorreClientException, MorreCommunicationException {
 
 		try {
 			// Serialize the feature set
@@ -229,6 +231,46 @@ public class HttpMorreClient implements Morre, Serializable {
 			// Something went wrong with the communication
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
+	}
+	
+	private String performSimpleQuery( String queryType, String keyword ) throws MorreClientException, MorreCommunicationException {
+		
+		try {
+			// Serialize the feature set
+
+			HashMap<String, String> parameter = new HashMap<>();
+
+			// Put in the Keyword
+			parameter.put(KEY_SINGLE_KEYWORD, keyword);
+			String jsonFeatures = gson.toJson( parameter );
+
+			// generates the request
+			HttpPost request = new HttpPost( new URL(morreUrl, queryType).toString() );
+			// adds the json string as package
+			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
+
+			// execute!
+			HttpResponse response = httpClient.execute(request);
+
+			// reads in the result
+			StringBuilder result = new StringBuilder();
+			BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			String line = "";
+			while ((line = resultReader.readLine()) != null) {
+				//append              
+				result.append(line);
+			}
+
+			return result.toString();
+		} catch (MalformedURLException e) {
+			// Wrong formatted URL. We can definitely blame the library user for this.
+			// Exception the awesome library developer uses it by himself, than we have to blame someone else... ;)
+			throw new MorreClientException("Exception while building the request url", e);
+		} catch (IOException e) {
+			// Something went wrong with the communication
+			throw new MorreCommunicationException("Error while HTTP Request.", e);
+		}
+		
 	}
 
 }
