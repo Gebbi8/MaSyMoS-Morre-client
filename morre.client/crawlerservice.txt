@@ -1,0 +1,14 @@
+/service
+
+/get_model_history
+	{'fileid': $id}
+
+/get_model_version
+	{'fileId': $id, 'versionId': $vid}
+
+/get_model
+	{'fileid': $id}
+
+/add_model
+	{'modelid': $id, 'versionid': $vid, 'xmldoc': $path, 'parents': { $parentModelId: [$parentVersionId] }, modelType: (SBML|CELLML|SEDML) }
+	!! TODO change to fileId

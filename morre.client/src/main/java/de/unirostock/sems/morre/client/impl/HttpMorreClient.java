@@ -31,15 +31,17 @@ import com.google.gson.reflect.TypeToken;
 
 import de.unirostock.sems.morre.client.FeatureSet;
 import de.unirostock.sems.morre.client.Morre;
+import de.unirostock.sems.morre.client.MorreCrawlerInterface;
 import de.unirostock.sems.morre.client.QueryType;
 import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
+import de.unirostock.sems.morre.client.dataholder.CrawledModel;
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
 import de.unirostock.sems.morre.client.dataholder.PersonResult;
 import de.unirostock.sems.morre.client.exception.MorreClientException;
 import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
 import de.unirostock.sems.morre.client.exception.MorreException;
 
-public class HttpMorreClient implements Morre, Serializable {
+public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializable {
 
 	private static final long serialVersionUID = 6215972631957486031L;
 	
@@ -271,6 +273,30 @@ public class HttpMorreClient implements Morre, Serializable {
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
 		
+	}
+
+	@Override
+	public List<String> getModelHistory(String fileId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CrawledModel getModelVersion(String fileId, String versionId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public CrawledModel getLatestModelVersion(String fileId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean addModel(CrawledModel model) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
