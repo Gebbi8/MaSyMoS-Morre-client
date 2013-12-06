@@ -60,6 +60,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private Type personResultType;
 	private Type annotationResultType;
 	private Type crawledModelType;
+	private Type singleMapType;
 	
 	private final String REST_URL_QUERY = "query/";
 	private final String REST_URL_CRAWLER = "service/";
@@ -81,6 +82,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	
 	private final String SKEY_FILEID = "fileId";
 	private final String SKEY_VERSIONID = "versionId";
+	private final String SKEY_EXCEPTION = "Exception";
 
 	public HttpMorreClient(String morreUrl) throws MalformedURLException {
 		// define urls
@@ -100,6 +102,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		annotationResultType = new TypeToken<List<AnnotationResult>>(){}.getType();
 		
 		crawledModelType = new TypeToken<CrawledModel>(){}.getType();
+		singleMapType = new TypeToken<Map<String, String>>(){}.getType();
 	}
 
 	@Override
@@ -301,9 +304,6 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	
 	// ---------------------------------------------------------------------------------------------------------------------
 	
-	// TODO catch exceptions
-	// TODO uniform the result parsing
-	
 	@Override
 	public List<String> getModelHistory(String fileId) throws MalformedURLException, MorreCommunicationException {
 		Map<String, String> parameter = new HashMap<>();
@@ -311,14 +311,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		
 		String result = performServiceQuery(SERVICE_GET_MODEL_HISTORY, parameter);
 		List<String> resultList = null;
-		
-		try {
-			resultList = gson.fromJson(result, singleListType);
-		} catch (JsonSyntaxException e) {
-			throw new MorreCommunicationException("Could not parse the server result " + result, e);
-		}
-		
-		return resultList;
+		return parseServiceResult(result, singleListType);
 	}
 
 	@Override
@@ -328,15 +321,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		parameter.put(SKEY_VERSIONID, versionId);
 		
 		String result = performServiceQuery(SERVICE_GET_MODEL_VERSION, parameter);
-		CrawledModel model = null;
-		
-		try {
-			model = gson.fromJson(result, crawledModelType);
-		} catch (JsonSyntaxException e) {
-			throw new MorreCommunicationException("Could not parse the server result " + result, e);
-		}
-		
-		return model;
+		return parseServiceResult(result, crawledModelType);
 	}
 
 	@Override
@@ -345,15 +330,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		parameter.put(SKEY_FILEID, fileId);
 		
 		String result = performServiceQuery(SERVICE_GET_LATEST_MODEL, parameter);
-		CrawledModel model = null;
-		
-		try {
-			model = gson.fromJson(result, crawledModelType);
-		} catch (JsonSyntaxException e) {
-			throw new MorreCommunicationException("Could not parse the server result " + result, e);
-		}
-		
-		return model;
+		return parseServiceResult(result, crawledModelType);
 	}
 
 	@Override
@@ -402,6 +379,49 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		
 	}
 	
+	private <R> R parseServiceResult( String result, Type resultType ) throws MorreCommunicationException {
+		
+		R resultObj = null;
+		try {
+			// first of all: try to parse the result correctly
+			resultObj = gson.fromJson(result, resultType);
+			if( resultObj instanceof Map<?, ?> ) {
+				// The returnType is a Map, maybe it is full of exception, lets check that
+				if( ((Map) resultObj).containsKey(SKEY_EXCEPTION) == true )
+					// the map contains an exception element -> lets analyse it!
+					analyseServiceException((Map<?, ?>) resultObj); 
+			}
+		} catch (JsonSyntaxException e) {
+			// not the result we've expected. Maybe its an exception?
+			Map<String, String> resultMap;
+			try {
+				resultMap = gson.fromJson(result, singleMapType);
+				analyseServiceException(resultMap, e);
+			}
+			catch (JsonSyntaxException e2) {
+				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON! " + result, e2);
+			}
+			
+		}
+		
+		return resultObj;
+	}
 	
+	private void analyseServiceException( Map<?, ?> resultMap ) throws MorreCommunicationException {
+		analyseServiceException(resultMap, null);
+	}
+	
+	private void analyseServiceException( Map<?, ?> resultMap, Throwable e ) throws MorreCommunicationException {
+		
+		if( resultMap.get(SKEY_EXCEPTION) != null && resultMap.get(SKEY_EXCEPTION) instanceof String ) {
+			// result is a map, containing the exception field, which is a String
+			String error = "Server-Side exception while request: " + (String) resultMap.get(SKEY_EXCEPTION);
+			if( e != null )
+				throw new MorreCommunicationException( error, e );
+			else
+				throw new MorreCommunicationException(error);
+		}
+		
+	}
 	
 }
