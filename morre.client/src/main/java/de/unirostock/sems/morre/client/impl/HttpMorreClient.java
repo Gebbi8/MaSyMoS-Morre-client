@@ -59,6 +59,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private Type modelResultType;
 	private Type personResultType;
 	private Type annotationResultType;
+	private Type crawledModelType;
 	
 	private final String REST_URL_QUERY = "query/";
 	private final String REST_URL_CRAWLER = "service/";
@@ -67,8 +68,19 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
 
+	private static final String SERVICE_ADD_MODEL = null;
+
 	private final String ERROR_KEY_RESULTS = "#Results";
 	private final String ERROR_KEY_EXCEPTION = "Exception";
+	
+	// ----
+	
+	private final String SERVICE_GET_MODEL_HISTORY = "get_model_history";
+	private final String SERVICE_GET_MODEL_VERSION = "get_model_version";
+	private final String SERVICE_GET_LATEST_MODEL = "get_model";
+	
+	private final String SKEY_FILEID = "fileId";
+	private final String SKEY_VERSIONID = "versionId";
 
 	public HttpMorreClient(String morreUrl) throws MalformedURLException {
 		// define urls
@@ -86,6 +98,8 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		modelResultType = new TypeToken<List<ModelResult>>(){}.getType();
 		personResultType = new TypeToken<List<PersonResult>>(){}.getType();
 		annotationResultType = new TypeToken<List<AnnotationResult>>(){}.getType();
+		
+		crawledModelType = new TypeToken<CrawledModel>(){}.getType();
 	}
 
 	@Override
@@ -284,29 +298,110 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		}
 		
 	}
-
+	
+	// ---------------------------------------------------------------------------------------------------------------------
+	
+	// TODO catch exceptions
+	// TODO uniform the result parsing
+	
 	@Override
-	public List<String> getModelHistory(String fileId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> getModelHistory(String fileId) throws MalformedURLException, MorreCommunicationException {
+		Map<String, String> parameter = new HashMap<>();
+		parameter.put(SKEY_FILEID, fileId);
+		
+		String result = performServiceQuery(SERVICE_GET_MODEL_HISTORY, parameter);
+		List<String> resultList = null;
+		
+		try {
+			resultList = gson.fromJson(result, singleListType);
+		} catch (JsonSyntaxException e) {
+			throw new MorreCommunicationException("Could not parse the server result " + result, e);
+		}
+		
+		return resultList;
 	}
 
 	@Override
-	public CrawledModel getModelVersion(String fileId, String versionId) {
-		// TODO Auto-generated method stub
-		return null;
+	public CrawledModel getModelVersion(String fileId, String versionId) throws MalformedURLException, MorreCommunicationException {
+		Map<String, String> parameter = new HashMap<>();
+		parameter.put(SKEY_FILEID, fileId);
+		parameter.put(SKEY_VERSIONID, versionId);
+		
+		String result = performServiceQuery(SERVICE_GET_MODEL_VERSION, parameter);
+		CrawledModel model = null;
+		
+		try {
+			model = gson.fromJson(result, crawledModelType);
+		} catch (JsonSyntaxException e) {
+			throw new MorreCommunicationException("Could not parse the server result " + result, e);
+		}
+		
+		return model;
 	}
 
 	@Override
-	public CrawledModel getLatestModelVersion(String fileId) {
-		// TODO Auto-generated method stub
-		return null;
+	public CrawledModel getLatestModelVersion(String fileId) throws MalformedURLException, MorreCommunicationException {
+		Map<String, String> parameter = new HashMap<>();
+		parameter.put(SKEY_FILEID, fileId);
+		
+		String result = performServiceQuery(SERVICE_GET_LATEST_MODEL, parameter);
+		CrawledModel model = null;
+		
+		try {
+			model = gson.fromJson(result, crawledModelType);
+		} catch (JsonSyntaxException e) {
+			throw new MorreCommunicationException("Could not parse the server result " + result, e);
+		}
+		
+		return model;
 	}
 
 	@Override
-	public boolean addModel(CrawledModel model) {
-		// TODO Auto-generated method stub
+	public boolean addModel(CrawledModel model) throws MalformedURLException, MorreCommunicationException {
+		
+		String result = performServiceQuery(SERVICE_ADD_MODEL, model);
+		
+		// TODO api is still incomplete...
 		return false;
 	}
+	
+	private <R> String performServiceQuery( String queryType, R parameter ) throws MalformedURLException, MorreCommunicationException {
+		
+		try {
 
+			// serialize the parameter
+			String jsonFeatures = gson.toJson( parameter );
+
+			// generates the request
+			String requestUrl = new URL(queryUrl, queryType).toString();
+			HttpPost request = new HttpPost( requestUrl );
+			// adds the json string as package
+			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
+
+			// execute!
+			HttpResponse response = httpClient.execute(request);
+
+			// reads in the result
+			StringBuilder result = new StringBuilder();
+			BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			String line = "";
+			while ((line = resultReader.readLine()) != null) {
+				//append              
+				result.append(line);
+			}
+
+			return result.toString();
+		} catch (MalformedURLException e) {
+			// Wrong formatted URL. We can definitely blame the library user for this.
+			// Exception the awesome library developer uses it by himself, than we have to blame someone else... ;)
+			throw new MorreClientException("Exception while building the request url", e);
+		} catch (IOException e) {
+			// Something went wrong with the communication
+			throw new MorreCommunicationException("Error while HTTP Request.", e);
+		}
+		
+	}
+	
+	
+	
 }
