@@ -24,7 +24,7 @@ public class MorreHttpTest {
 	
 	@Before
 	public void prepare() throws MalformedURLException {
-		morre = new HttpMorreClient( "http://morre.sems.uni-rostock.de:7474/morre/query/" );
+		morre = new HttpMorreClient( "http://morre.sems.uni-rostock.de:7474/morre/" );
 	}
 	
 	@Test

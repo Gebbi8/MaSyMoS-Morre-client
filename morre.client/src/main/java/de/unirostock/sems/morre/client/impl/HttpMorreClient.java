@@ -48,6 +48,8 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private final Log log = LogFactory.getLog( getClass() );
 
 	private URL morreUrl = null;
+	private URL queryUrl = null;
+	private URL serviceUrl = null;
 	private HttpClient httpClient = null;
 	private Gson gson = null;
 
@@ -57,7 +59,10 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private Type modelResultType;
 	private Type personResultType;
 	private Type annotationResultType;
-
+	
+	private final String REST_URL_QUERY = "query/";
+	private final String REST_URL_CRAWLER = "service/";
+	
 	private final String KEY_KEYWORDS = "keywords";
 	private final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
@@ -66,7 +71,11 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private final String ERROR_KEY_EXCEPTION = "Exception";
 
 	public HttpMorreClient(String morreUrl) throws MalformedURLException {
+		// define urls
 		this.morreUrl = new URL(morreUrl);
+		this.queryUrl = new URL(this.morreUrl, REST_URL_QUERY);
+		this.serviceUrl = new URL(this.morreUrl, REST_URL_CRAWLER);
+		
 		httpClient = HttpClientBuilder.create().build();
 		gson = new Gson();
 
@@ -89,7 +98,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	public List<String> getQueryFeatures(String queryType) throws MorreException, MorreClientException, MorreCommunicationException {
 
 		try {
-			HttpGet request = new HttpGet( new URL(morreUrl, queryType).toString() );
+			HttpGet request = new HttpGet( new URL(queryUrl, queryType).toString() );
 			HttpResponse response = httpClient.execute(request);
 
 			// reads in the result
@@ -208,7 +217,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			String jsonFeatures = gson.toJson( complete );
 
 			// generates the request
-			HttpPost request = new HttpPost( new URL(morreUrl, queryType).toString() );
+			HttpPost request = new HttpPost( new URL(queryUrl, queryType).toString() );
 			// adds the json string as package
 			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
 
@@ -247,7 +256,8 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			String jsonFeatures = gson.toJson( parameter );
 
 			// generates the request
-			HttpPost request = new HttpPost( new URL(morreUrl, queryType).toString() );
+			String requestUrl = new URL(queryUrl, queryType).toString();
+			HttpPost request = new HttpPost( requestUrl );
 			// adds the json string as package
 			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
 
