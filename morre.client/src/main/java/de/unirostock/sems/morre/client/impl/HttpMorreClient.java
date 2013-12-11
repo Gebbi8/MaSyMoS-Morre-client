@@ -158,9 +158,10 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	@Override
-	public List<AnnotationResult> doAnnotationQuery(FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
+	public List<AnnotationResult> doAnnotationQuery(String query) throws MorreClientException, MorreCommunicationException, MorreException {
 		// perform the query
-		String resultString = performQuery(QueryType.ANNOTATION_QUERY, features);
+		String resultString = performSimpleQuery(QueryType.ANNOTATION_QUERY, query);
+//		String resultString = performQuery(QueryType.ANNOTATION_QUERY, features);
 		return parseQueryResult(resultString, annotationResultType);
 	}
 

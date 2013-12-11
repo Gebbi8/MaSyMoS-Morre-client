@@ -69,6 +69,6 @@ public interface Morre extends Serializable {
 	 * @param features
 	 * @return
 	 */
-	public List<AnnotationResult> doAnnotationQuery( FeatureSet features ) throws MorreException, MorreClientException, MorreCommunicationException;
+	public List<AnnotationResult> doAnnotationQuery( String query ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 }

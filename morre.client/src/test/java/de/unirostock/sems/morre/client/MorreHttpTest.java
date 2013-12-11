@@ -50,10 +50,7 @@ public class MorreHttpTest {
 	@Test
 	public void testAnnotationQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
-		FeatureSet features = new FeatureSet();
-		features.set("FAMILYNAME", "Lloyd");
-		
-		List<AnnotationResult> result = morre.doAnnotationQuery(features);
+		List<AnnotationResult> result = morre.doAnnotationQuery("Lloyd");
 		System.out.println( MessageFormat.format("Found {0} annotations", result.size()) );
 		System.out.println( result );
 	}
