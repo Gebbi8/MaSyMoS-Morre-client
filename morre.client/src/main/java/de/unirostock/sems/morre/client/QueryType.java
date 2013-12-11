@@ -1,6 +1,12 @@
 package de.unirostock.sems.morre.client;
 
-
+/**
+ * All available Query-Types in the {@link de.unirostock.sems.morre.client.Morre MORRE}-Interface
+ * <b>Note:</b> Not all queries are feature driver, some only expects a keyword. And remember to check if the return type of the query matches with return type or the
+ * method your are going to use to perform this query! 
+ *  
+ *
+ */
 public class QueryType {
 
 	public final static String MODEL_QUERY = "model_query";

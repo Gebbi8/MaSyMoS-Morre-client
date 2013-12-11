@@ -3,6 +3,11 @@ package de.unirostock.sems.morre.client.dataholder;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Dataholder Class for one Result produced by an PersonQuery with the {@link de.unirostock.sems.morre.client.Morre MORRE}-Interface
+ * contains a {@link de.unirostock.sems.morre.client.dataholder.Person Person} Dataholder Object
+ *
+ */
 public class PersonResult implements Serializable, Comparable<PersonResult> {
 
 	private static final long serialVersionUID = -7962256029915028650L;

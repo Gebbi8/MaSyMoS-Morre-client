@@ -2,6 +2,11 @@ package de.unirostock.sems.morre.client.dataholder;
 
 import java.io.Serializable;
 
+/**
+ * Dataholder Class for a Model
+ * @see ModelResult
+ *
+ */
 public class Model implements Serializable {
 
 	private static final long serialVersionUID = -7484517560145746179L;

@@ -37,6 +37,7 @@ import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
 import de.unirostock.sems.morre.client.dataholder.CrawledModel;
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
 import de.unirostock.sems.morre.client.dataholder.PersonResult;
+import de.unirostock.sems.morre.client.dataholder.PublicationResult;
 import de.unirostock.sems.morre.client.exception.MorreClientException;
 import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
 import de.unirostock.sems.morre.client.exception.MorreException;
@@ -44,7 +45,7 @@ import de.unirostock.sems.morre.client.exception.MorreException;
 public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializable {
 
 	private static final long serialVersionUID = 6215972631957486031L;
-	
+
 	private final Log log = LogFactory.getLog( getClass() );
 
 	private URL morreUrl = null;
@@ -54,17 +55,18 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private Gson gson = null;
 
 	private Type singleListType;
-//	private Type completeType;
+	//	private Type completeType;
 	private Type featureListType;
 	private Type modelResultType;
 	private Type personResultType;
+	private Type publicationResultType;
 	private Type annotationResultType;
 	private Type crawledModelType;
 	private Type singleMapType;
-	
+
 	private final String REST_URL_QUERY = "query/";
 	private final String REST_URL_CRAWLER = "service/";
-	
+
 	private final String KEY_KEYWORDS = "keywords";
 	private final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
@@ -73,13 +75,13 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	private final String ERROR_KEY_RESULTS = "#Results";
 	private final String ERROR_KEY_EXCEPTION = "Exception";
-	
+
 	// ----
-	
+
 	private final String SERVICE_GET_MODEL_HISTORY = "get_model_history";
 	private final String SERVICE_GET_MODEL_VERSION = "get_model_version";
 	private final String SERVICE_GET_LATEST_MODEL = "get_model";
-	
+
 	private final String SKEY_FILEID = "fileId";
 	private final String SKEY_VERSIONID = "versionId";
 	private final String SKEY_EXCEPTION = "Exception";
@@ -89,26 +91,26 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		this.morreUrl = new URL(morreUrl);
 		this.queryUrl = new URL(this.morreUrl, REST_URL_QUERY);
 		this.serviceUrl = new URL(this.morreUrl, REST_URL_CRAWLER);
-		
+
 		httpClient = HttpClientBuilder.create().build();
 		gson = new Gson();
 
-//		completeType = new TypeToken<List<Map<String, JsonElement>>>(){}.getType();
+		//		completeType = new TypeToken<List<Map<String, JsonElement>>>(){}.getType();
 		singleListType = new TypeToken<List<String>>(){}.getType();
 		featureListType = new TypeToken<List<String>>(){}.getType();
 
 		modelResultType = new TypeToken<List<ModelResult>>(){}.getType();
 		personResultType = new TypeToken<List<PersonResult>>(){}.getType();
+		publicationResultType = new TypeToken<List<PublicationResult>>(){}.getType();
 		annotationResultType = new TypeToken<List<AnnotationResult>>(){}.getType();
-		
+
 		crawledModelType = new TypeToken<CrawledModel>(){}.getType();
 		singleMapType = new TypeToken<Map<String, String>>(){}.getType();
 	}
 
 	@Override
 	public List<ModelResult> modelQuery(String query) throws MorreClientException, MorreCommunicationException, MorreException {
-		String resultString = performSimpleQuery(QueryType.MODEL_QUERY, query);
-		return parseQueryResult(resultString, modelResultType);
+		return doSimpleModelQuery(QueryType.MODEL_QUERY, query);
 	}
 
 	@Override
@@ -151,6 +153,13 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	@Override
+	public List<ModelResult> doSimpleModelQuery(String queryType, String keyword) throws MorreException ,MorreClientException ,MorreCommunicationException {
+		// perform the query
+		String resultString = performSimpleQuery(queryType, keyword);
+		return parseQueryResult(resultString, modelResultType);
+	}
+
+	@Override
 	public List<PersonResult> doPersonQuery(FeatureSet features) throws MorreClientException, MorreCommunicationException, MorreException {
 		// perform the query
 		String resultString = performQuery(QueryType.PERSON_QUERY, features);
@@ -161,8 +170,14 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	public List<AnnotationResult> doAnnotationQuery(String query) throws MorreClientException, MorreCommunicationException, MorreException {
 		// perform the query
 		String resultString = performSimpleQuery(QueryType.ANNOTATION_QUERY, query);
-//		String resultString = performQuery(QueryType.ANNOTATION_QUERY, features);
 		return parseQueryResult(resultString, annotationResultType);
+	}
+
+	@Override
+	public List<PublicationResult> doPublicationQuery(FeatureSet features) throws MorreException, MorreClientException, MorreCommunicationException {
+		// perform the query
+		String resultString = performQuery(QueryType.PUBLICATION_QUERY, features);
+		return parseQueryResult(resultString, publicationResultType);
 	}
 
 	private <R> List<R> parseQueryResult( String resultString, Type parseType ) throws MorreClientException, MorreCommunicationException, MorreException {
@@ -211,15 +226,15 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			}
 			catch (JsonSyntaxException e2) {
 				// second attempt to parse failed, two. Now our fates rests in God's hands... (... or we just throw an exception)
-				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON!", e2);
+				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON!", e);
 			}
 
 			// **** first catch block ****
 		}
-		
+
 		return result;
 	}
-	
+
 	private String performQuery( String queryType, FeatureSet features ) throws MorreClientException, MorreCommunicationException {
 
 		try {
@@ -261,9 +276,9 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
 	}
-	
+
 	private String performSimpleQuery( String queryType, String keyword ) throws MorreClientException, MorreCommunicationException {
-		
+
 		try {
 			// Serialize the feature set
 
@@ -300,16 +315,16 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			// Something went wrong with the communication
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
-		
+
 	}
-	
+
 	// ---------------------------------------------------------------------------------------------------------------------
-	
+
 	@Override
 	public List<String> getModelHistory(String fileId) throws MalformedURLException, MorreCommunicationException {
 		Map<String, String> parameter = new HashMap<>();
 		parameter.put(SKEY_FILEID, fileId);
-		
+
 		String result = performServiceQuery(SERVICE_GET_MODEL_HISTORY, parameter);
 		List<String> resultList = null;
 		return parseServiceResult(result, singleListType);
@@ -320,7 +335,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		Map<String, String> parameter = new HashMap<>();
 		parameter.put(SKEY_FILEID, fileId);
 		parameter.put(SKEY_VERSIONID, versionId);
-		
+
 		String result = performServiceQuery(SERVICE_GET_MODEL_VERSION, parameter);
 		return parseServiceResult(result, crawledModelType);
 	}
@@ -329,22 +344,22 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	public CrawledModel getLatestModelVersion(String fileId) throws MalformedURLException, MorreCommunicationException {
 		Map<String, String> parameter = new HashMap<>();
 		parameter.put(SKEY_FILEID, fileId);
-		
+
 		String result = performServiceQuery(SERVICE_GET_LATEST_MODEL, parameter);
 		return parseServiceResult(result, crawledModelType);
 	}
 
 	@Override
 	public boolean addModel(CrawledModel model) throws MalformedURLException, MorreCommunicationException {
-		
+
 		String result = performServiceQuery(SERVICE_ADD_MODEL, model);
-		
+
 		// TODO api is still incomplete...
 		return false;
 	}
-	
+
 	private <R> String performServiceQuery( String queryType, R parameter ) throws MalformedURLException, MorreCommunicationException {
-		
+
 		try {
 
 			// serialize the parameter
@@ -377,11 +392,11 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			// Something went wrong with the communication
 			throw new MorreCommunicationException("Error while HTTP Request.", e);
 		}
-		
+
 	}
-	
+
 	private <R> R parseServiceResult( String result, Type resultType ) throws MorreCommunicationException {
-		
+
 		R resultObj = null;
 		try {
 			// first of all: try to parse the result correctly
@@ -400,20 +415,20 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 				analyseServiceException(resultMap, e);
 			}
 			catch (JsonSyntaxException e2) {
-				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON! " + result, e2);
+				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON! " + result, e);
 			}
-			
+
 		}
-		
+
 		return resultObj;
 	}
-	
+
 	private void analyseServiceException( Map<?, ?> resultMap ) throws MorreCommunicationException {
 		analyseServiceException(resultMap, null);
 	}
-	
+
 	private void analyseServiceException( Map<?, ?> resultMap, Throwable e ) throws MorreCommunicationException {
-		
+
 		if( resultMap.get(SKEY_EXCEPTION) != null && resultMap.get(SKEY_EXCEPTION) instanceof String ) {
 			// result is a map, containing the exception field, which is a String
 			String error = "Server-Side exception while request: " + (String) resultMap.get(SKEY_EXCEPTION);
@@ -422,7 +437,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			else
 				throw new MorreCommunicationException(error);
 		}
-		
+
 	}
-	
+
 }

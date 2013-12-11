@@ -3,6 +3,10 @@ package de.unirostock.sems.morre.client.dataholder;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Dataholder Object for a model, which is going to be inserted into the database with the {@link de.unirostock.sems.morre.client.MorreCrawlerInterface MorreCrawlerInterface}
+ *
+ */
 public class CrawledModel {
 	
 	public static final String TYPE_CELLML	= "CELLML";

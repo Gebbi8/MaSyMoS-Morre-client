@@ -6,6 +6,13 @@ import java.util.List;
 import de.unirostock.sems.morre.client.dataholder.CrawledModel;
 import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
 
+/**
+ * 
+ * Interface for model crawler to push models to the MORRE Database API 
+ * 
+ * @author Martin Peters
+ *
+ */
 public interface MorreCrawlerInterface {
 	
 	/**

@@ -3,6 +3,10 @@ package de.unirostock.sems.morre.client.dataholder;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Dataholder Class for a Publication returned in a @{link de.unirostock.sems.morre.client.dataholder.PublicationResult PublicationResult}
+ *
+ */
 public class Publication implements Serializable {
 	
 	private static final long serialVersionUID = -757552167110985918L;
@@ -10,10 +14,10 @@ public class Publication implements Serializable {
 	private String title;
 	private String journal;
 	private String synopsis;
-	private int year;
+	private String year;
 	private List<Person> authors;
 	
-	public Publication(String title, String journal, String synopsis, int year, List<Person> authors) {
+	public Publication(String title, String journal, String synopsis, String year, List<Person> authors) {
 		super();
 		this.title = title;
 		this.journal = journal;
@@ -46,11 +50,11 @@ public class Publication implements Serializable {
 		this.synopsis = synopsis;
 	}
 
-	public int getYear() {
+	public String getYear() {
 		return year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(String year) {
 		this.year = year;
 	}
 

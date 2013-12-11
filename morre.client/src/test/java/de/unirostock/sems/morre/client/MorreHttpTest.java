@@ -12,6 +12,8 @@ import org.junit.runners.JUnit4;
 
 import de.unirostock.sems.morre.client.dataholder.AnnotationResult;
 import de.unirostock.sems.morre.client.dataholder.ModelResult;
+import de.unirostock.sems.morre.client.dataholder.PersonResult;
+import de.unirostock.sems.morre.client.dataholder.PublicationResult;
 import de.unirostock.sems.morre.client.exception.MorreClientException;
 import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
 import de.unirostock.sems.morre.client.exception.MorreException;
@@ -28,34 +30,6 @@ public class MorreHttpTest {
 	}
 	
 	@Test
-	public void testSimpleModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
-		
-		List<ModelResult> result = morre.modelQuery("novak");
-		System.out.println( MessageFormat.format("Found {0} models", result.size()) );
-		System.out.println( result );
-		
-	}
-	
-	@Test
-	public void testComplexModelQuery() throws MorreCommunicationException, MorreException {
-		
-		FeatureSet features = new FeatureSet();
-		features.set("FAMILYNAME", "Lloyd");
-		
-		List<ModelResult> result = morre.doModelQuery(QueryType.PERSON_MODEL_QUERY, features);
-		System.out.println( MessageFormat.format("Found {0} models", result.size()) );
-		System.out.println( result );
-	}
-	
-	@Test
-	public void testAnnotationQuery() throws MorreClientException, MorreCommunicationException, MorreException {
-		
-		List<AnnotationResult> result = morre.doAnnotationQuery("Lloyd");
-		System.out.println( MessageFormat.format("Found {0} annotations", result.size()) );
-		System.out.println( result );
-	}
-	
-	@Test
 	public void testGettingFeatures() throws MorreException, MalformedURLException, IllegalStateException, IOException {
 		
 		String[] queries = { QueryType.ANNOTATION_MODEL_QUERY, QueryType.ANNOTATION_QUERY, QueryType.CELLML_MODEL_QUERY, QueryType.MODEL_QUERY, QueryType.PERSON_MODEL_QUERY,
@@ -67,5 +41,91 @@ public class MorreHttpTest {
 		}
 		
 	}
+	
+	@Test
+	public void testSimpleModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		List<ModelResult> result = morre.modelQuery("novak");
+		System.out.println( MessageFormat.format("Found {0} models", result.size()) );
+		System.out.println( result );
+		
+	}
+	
+	@Test
+	public void testPersonModelQuery() throws MorreCommunicationException, MorreException {
+		
+		FeatureSet features = new FeatureSet();
+		features.set("FAMILYNAME", "Lloyd");
+		
+		List<ModelResult> result = morre.doModelQuery(QueryType.PERSON_MODEL_QUERY, features);
+		System.out.println( MessageFormat.format("PersonModelQuery: Found {0} models", result.size()) );
+		System.out.println( result );
+	}
+	
+	@Test
+	public void testCellMlModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		FeatureSet features = new FeatureSet();
+		features.set("NAME", "novak");
+		
+		List<ModelResult> result = morre.doModelQuery(QueryType.CELLML_MODEL_QUERY, features);
+		System.out.println( MessageFormat.format("CellMlModelQuery: Found {0} models", result.size()) );
+		System.out.println( result );
+		
+	}
+	
+	@Test
+	public void testAnnotationModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		List<ModelResult> result = morre.doSimpleModelQuery(QueryType.ANNOTATION_MODEL_QUERY, "This study investigates the reverse mode of the Na/glucose cotransporter SGLT1. In giant excised inside-out membrane patches from Xenopus laevis oocytes expressing rabbit SGLT1, application of alpha-methyl D");
+		System.out.println( MessageFormat.format("AnnotationModelQuery: Found {0} models", result.size()) );
+//		System.out.println( result );
+		
+	}
+	
+	@Test
+	public void testPublicationModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		FeatureSet features = new FeatureSet();
+		features.set("TITLE", "Mathematical modeling of mechanically modulated rhythm disturbances in homogeneous and heterogeneous myocardium with attenuated activity of na+ -k+ pump");
+		
+		List<ModelResult> result = morre.doModelQuery(QueryType.PUBLICATION_MODEL_QUERY, features);
+		System.out.println( MessageFormat.format("PublicationModelQuery: Found {0} models", result.size()) );
+		System.out.println( result );
+		
+	}
+	
+	@Test
+	public void testPersonQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		FeatureSet features = new FeatureSet();
+		features.set("FAMILYNAME", "Lloyd");
+		
+		List<PersonResult> result = morre.doPersonQuery(features);
+		System.out.println( MessageFormat.format("PersonQuery: Found {0} annotations", result.size()) );
+		System.out.println( result );
+		
+	}
+	
+	@Test
+	public void testPublicationQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		FeatureSet features = new FeatureSet();
+		features.set("TITLE", "Mathematical modeling of mechanically modulated rhythm disturbances in homogeneous and heterogeneous myocardium with attenuated activity of na+ -k+ pump");
+		
+		List<PublicationResult> result = morre.doPublicationQuery(features);
+		System.out.println( MessageFormat.format("PersonQuery: Found {0} annotations", result.size()) );
+		System.out.println( result );
+	}
+	
+	@Test
+	public void testAnnotationQuery() throws MorreClientException, MorreCommunicationException, MorreException {
+		
+		List<AnnotationResult> result = morre.doAnnotationQuery("Lloyd");
+		System.out.println( MessageFormat.format("AnnotationQuery: Found {0} annotations", result.size()) );
+		System.out.println( result );
+	}
+	
+	
 
 }

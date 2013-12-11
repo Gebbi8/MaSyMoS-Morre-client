@@ -3,6 +3,10 @@ package de.unirostock.sems.morre.client.dataholder;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Dataholder Class for one Result produced by an AnnotationQuery with the {@link de.unirostock.sems.morre.client.Morre MORRE}-Interface
+ *
+ */
 public class AnnotationResult implements Serializable {
 	
 	private static final long serialVersionUID = -3824665970559332181L;
