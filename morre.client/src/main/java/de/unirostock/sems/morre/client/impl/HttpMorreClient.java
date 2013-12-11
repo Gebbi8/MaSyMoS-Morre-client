@@ -350,7 +350,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			String jsonFeatures = gson.toJson( parameter );
 
 			// generates the request
-			String requestUrl = new URL(queryUrl, queryType).toString();
+			String requestUrl = new URL(serviceUrl, queryType).toString();
 			HttpPost request = new HttpPost( requestUrl );
 			// adds the json string as package
 			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
@@ -387,7 +387,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			resultObj = gson.fromJson(result, resultType);
 			if( resultObj instanceof Map<?, ?> ) {
 				// The returnType is a Map, maybe it is full of exception, lets check that
-				if( ((Map) resultObj).containsKey(SKEY_EXCEPTION) == true )
+				if( ((Map<?, ?>) resultObj).containsKey(SKEY_EXCEPTION) == true )
 					// the map contains an exception element -> lets analyse it!
 					analyseServiceException((Map<?, ?>) resultObj); 
 			}
