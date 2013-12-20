@@ -20,10 +20,10 @@ public class CrawledModel {
 	private Map<String,List<String>> parentMap;
 	private Map<String, String> metaMap;
 	
-	public CrawledModel(String modelId, String versionId, String xmldoc,
+	public CrawledModel(String fileId, String versionId, String xmldoc,
 			Map<String, List<String>> parentMap, Map<String, String> metaMap, String modelType) {
 		super();
-		this.fileId = modelId;
+		this.fileId = fileId;
 		this.versionId = versionId;
 		this.xmldoc = xmldoc;
 		this.parentMap = parentMap;
@@ -40,8 +40,8 @@ public class CrawledModel {
 	public String getFileId() {
 		return fileId;
 	}
-	public void setFileId(String modelId) {
-		this.fileId = modelId;
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
 	}
 	public String getVersionId() {
 		return versionId;
