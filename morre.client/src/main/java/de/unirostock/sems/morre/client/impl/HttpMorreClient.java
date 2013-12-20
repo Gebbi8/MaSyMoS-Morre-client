@@ -321,7 +321,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	// ---------------------------------------------------------------------------------------------------------------------
 
 	@Override
-	public List<String> getModelHistory(String fileId) throws MalformedURLException, MorreCommunicationException {
+	public List<String> getModelHistory(String fileId) throws MorreClientException, MorreCommunicationException, MorreException {
 		Map<String, String> parameter = new HashMap<>();
 		parameter.put(SKEY_FILEID, fileId);
 
@@ -331,7 +331,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	@Override
-	public CrawledModel getModelVersion(String fileId, String versionId) throws MalformedURLException, MorreCommunicationException {
+	public CrawledModel getModelVersion(String fileId, String versionId) throws MorreClientException, MorreCommunicationException, MorreException {
 		Map<String, String> parameter = new HashMap<>();
 		parameter.put(SKEY_FILEID, fileId);
 		parameter.put(SKEY_VERSIONID, versionId);
@@ -341,7 +341,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	@Override
-	public CrawledModel getLatestModelVersion(String fileId) throws MalformedURLException, MorreCommunicationException {
+	public CrawledModel getLatestModelVersion(String fileId) throws MorreClientException, MorreCommunicationException, MorreException {
 		Map<String, String> parameter = new HashMap<>();
 		parameter.put(SKEY_FILEID, fileId);
 
@@ -350,7 +350,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	@Override
-	public boolean addModel(CrawledModel model) throws MalformedURLException, MorreCommunicationException {
+	public boolean addModel(CrawledModel model) throws MorreClientException, MorreCommunicationException {
 
 		String result = performServiceQuery(SERVICE_ADD_MODEL, model);
 
@@ -358,7 +358,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		return false;
 	}
 
-	private <R> String performServiceQuery( String queryType, R parameter ) throws MalformedURLException, MorreCommunicationException {
+	private <R> String performServiceQuery( String queryType, R parameter ) throws MorreClientException, MorreCommunicationException {
 
 		try {
 
@@ -395,7 +395,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	}
 
-	private <R> R parseServiceResult( String result, Type resultType ) throws MorreCommunicationException {
+	private <R> R parseServiceResult( String result, Type resultType ) throws MorreCommunicationException, MorreException {
 
 		R resultObj = null;
 		try {
@@ -423,19 +423,19 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		return resultObj;
 	}
 
-	private void analyseServiceException( Map<?, ?> resultMap ) throws MorreCommunicationException {
+	private void analyseServiceException( Map<?, ?> resultMap ) throws MorreException {
 		analyseServiceException(resultMap, null);
 	}
 
-	private void analyseServiceException( Map<?, ?> resultMap, Throwable e ) throws MorreCommunicationException {
+	private void analyseServiceException( Map<?, ?> resultMap, Throwable e ) throws MorreException {
 
 		if( resultMap.get(SKEY_EXCEPTION) != null && resultMap.get(SKEY_EXCEPTION) instanceof String ) {
 			// result is a map, containing the exception field, which is a String
 			String error = "Server-Side exception while request: " + (String) resultMap.get(SKEY_EXCEPTION);
 			if( e != null )
-				throw new MorreCommunicationException( error, e );
+				throw new MorreException( error, e );
 			else
-				throw new MorreCommunicationException(error);
+				throw new MorreException(error);
 		}
 
 	}

@@ -4,7 +4,9 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 import de.unirostock.sems.morre.client.dataholder.CrawledModel;
+import de.unirostock.sems.morre.client.exception.MorreClientException;
 import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
+import de.unirostock.sems.morre.client.exception.MorreException;
 
 /**
  * 
@@ -21,9 +23,10 @@ public interface MorreCrawlerInterface {
 	 * @param fileId
 	 * @return
 	 * @throws MorreCommunicationException 
+	 * @throws MorreException 
 	 * @throws MalformedURLException 
 	 */
-	public List<String> getModelHistory( String fileId ) throws MalformedURLException, MorreCommunicationException;
+	public List<String> getModelHistory( String fileId ) throws MorreClientException, MorreCommunicationException, MorreException;
 	
 	/**
 	 * Returns one specific version of a model as dataholder object
@@ -32,9 +35,10 @@ public interface MorreCrawlerInterface {
 	 * @param versionId
 	 * @return
 	 * @throws MorreCommunicationException 
+	 * @throws MorreException 
 	 * @throws MalformedURLException 
 	 */
-	public CrawledModel getModelVersion( String fileId, String versionId ) throws MalformedURLException, MorreCommunicationException;
+	public CrawledModel getModelVersion( String fileId, String versionId ) throws MorreClientException, MorreCommunicationException, MorreException;
 	
 	/**
 	 * Returns the latest version of a model as dataholder object
@@ -42,9 +46,10 @@ public interface MorreCrawlerInterface {
 	 * @param fileId
 	 * @return
 	 * @throws MorreCommunicationException 
+	 * @throws MorreException 
 	 * @throws MalformedURLException 
 	 */
-	public CrawledModel getLatestModelVersion( String fileId ) throws MalformedURLException, MorreCommunicationException;
+	public CrawledModel getLatestModelVersion( String fileId ) throws MorreClientException, MorreCommunicationException, MorreException;
 	
 	/**
 	 * Adds a model to the database
@@ -54,6 +59,6 @@ public interface MorreCrawlerInterface {
 	 * @throws MorreCommunicationException 
 	 * @throws MalformedURLException 
 	 */
-	public boolean addModel( CrawledModel model ) throws MalformedURLException, MorreCommunicationException;
+	public boolean addModel( CrawledModel model ) throws MorreClientException, MorreCommunicationException, MorreException;
 	
 }
