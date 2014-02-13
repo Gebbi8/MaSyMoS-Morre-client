@@ -70,5 +70,56 @@ public class Publication implements Serializable {
 	public String toString() {
 		return "Publication [title=" + title + ", year=" + year + "]";
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((authors == null) ? 0 : authors.hashCode());
+		result = prime * result + ((journal == null) ? 0 : journal.hashCode());
+		result = prime * result
+				+ ((synopsis == null) ? 0 : synopsis.hashCode());
+		result = prime * result + ((title == null) ? 0 : title.hashCode());
+		result = prime * result + ((year == null) ? 0 : year.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Publication other = (Publication) obj;
+		if (authors == null) {
+			if (other.authors != null)
+				return false;
+		} else if (!authors.equals(other.authors))
+			return false;
+		if (journal == null) {
+			if (other.journal != null)
+				return false;
+		} else if (!journal.equals(other.journal))
+			return false;
+		if (synopsis == null) {
+			if (other.synopsis != null)
+				return false;
+		} else if (!synopsis.equals(other.synopsis))
+			return false;
+		if (title == null) {
+			if (other.title != null)
+				return false;
+		} else if (!title.equals(other.title))
+			return false;
+		if (year == null) {
+			if (other.year != null)
+				return false;
+		} else if (!year.equals(other.year))
+			return false;
+		return true;
+	}
+	
 	
 }

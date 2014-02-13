@@ -56,6 +56,41 @@ public class PersonResult implements Serializable, Comparable<PersonResult> {
 	public int compareTo(PersonResult person) {
 		return Float.compare(person.getScore(), score);
 	}
-	
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((person == null) ? 0 : person.hashCode());
+		result = prime
+				* result
+				+ ((relatedModelsUri == null) ? 0 : relatedModelsUri.hashCode());
+		result = prime * result + Float.floatToIntBits(score);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PersonResult other = (PersonResult) obj;
+		if (person == null) {
+			if (other.person != null)
+				return false;
+		} else if (!person.equals(other.person))
+			return false;
+		if (relatedModelsUri == null) {
+			if (other.relatedModelsUri != null)
+				return false;
+		} else if (!relatedModelsUri.equals(other.relatedModelsUri))
+			return false;
+		if (Float.floatToIntBits(score) != Float.floatToIntBits(other.score))
+			return false;
+		return true;
+	}
 	
 }

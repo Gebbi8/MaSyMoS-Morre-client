@@ -78,4 +78,68 @@ public class CrawledModel {
 		this.modelType = modelType;
 	}
 
+	@Override
+	public String toString() {
+		return "CrawledModel [fileId=" + fileId + ", versionId=" + versionId
+				+ "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((fileId == null) ? 0 : fileId.hashCode());
+		result = prime * result + ((metaMap == null) ? 0 : metaMap.hashCode());
+		result = prime * result
+				+ ((modelType == null) ? 0 : modelType.hashCode());
+		result = prime * result
+				+ ((parentMap == null) ? 0 : parentMap.hashCode());
+		result = prime * result
+				+ ((versionId == null) ? 0 : versionId.hashCode());
+		result = prime * result + ((xmldoc == null) ? 0 : xmldoc.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CrawledModel other = (CrawledModel) obj;
+		if (fileId == null) {
+			if (other.fileId != null)
+				return false;
+		} else if (!fileId.equals(other.fileId))
+			return false;
+		if (metaMap == null) {
+			if (other.metaMap != null)
+				return false;
+		} else if (!metaMap.equals(other.metaMap))
+			return false;
+		if (modelType == null) {
+			if (other.modelType != null)
+				return false;
+		} else if (!modelType.equals(other.modelType))
+			return false;
+		if (parentMap == null) {
+			if (other.parentMap != null)
+				return false;
+		} else if (!parentMap.equals(other.parentMap))
+			return false;
+		if (versionId == null) {
+			if (other.versionId != null)
+				return false;
+		} else if (!versionId.equals(other.versionId))
+			return false;
+		if (xmldoc == null) {
+			if (other.xmldoc != null)
+				return false;
+		} else if (!xmldoc.equals(other.xmldoc))
+			return false;
+		return true;
+	}
+
 }

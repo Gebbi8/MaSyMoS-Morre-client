@@ -39,5 +39,27 @@ public class ModelResult extends Model implements Comparable<ModelResult>, Seria
 	public int compareTo(ModelResult model) {
 		return Float.compare( model.getScore(), score );
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Float.floatToIntBits(score);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ModelResult other = (ModelResult) obj;
+		if (Float.floatToIntBits(score) != Float.floatToIntBits(other.score))
+			return false;
+		return true;
+	}
 	
 }
