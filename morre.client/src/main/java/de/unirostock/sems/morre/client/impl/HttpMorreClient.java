@@ -71,8 +71,6 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
 
-	private static final String SERVICE_ADD_MODEL = null;
-
 	private final String ERROR_KEY_RESULTS = "#Results";
 	private final String ERROR_KEY_EXCEPTION = "Exception";
 
@@ -81,6 +79,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private final String SERVICE_GET_MODEL_HISTORY = "get_model_history";
 	private final String SERVICE_GET_MODEL_VERSION = "get_model_version";
 	private final String SERVICE_GET_LATEST_MODEL = "get_model";
+	private static final String SERVICE_ADD_MODEL = "add_model";
 
 	private final String SKEY_FILEID = "fileId";
 	private final String SKEY_VERSIONID = "versionId";
@@ -353,9 +352,13 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	public boolean addModel(CrawledModel model) throws MorreClientException, MorreCommunicationException {
 
 		String result = performServiceQuery(SERVICE_ADD_MODEL, model);
-
+		System.out.println("----");
+		System.out.println(result);
+		System.out.println("----");
+		log.debug(result);
+		
 		// TODO api is still incomplete...
-		return false;
+		return true;
 	}
 
 	private <R> String performServiceQuery( String queryType, R parameter ) throws MorreClientException, MorreCommunicationException {
@@ -368,7 +371,9 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			// generates the request
 			String requestUrl = new URL(serviceUrl, queryType).toString();
 			HttpPost request = new HttpPost( requestUrl );
+			request.addHeader( "Accept", ContentType.APPLICATION_JSON.toString());
 			// adds the json string as package
+			System.out.println(jsonFeatures);
 			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
 
 			// execute!
@@ -386,7 +391,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			return result.toString();
 		} catch (MalformedURLException e) {
 			// Wrong formatted URL. We can definitely blame the library user for this.
-			// Exception the awesome library developer uses it by himself, than we have to blame someone else... ;)
+			// Except the awesome library developer uses it by himself, than we have to blame someone else... ;)
 			throw new MorreClientException("Exception while building the request url", e);
 		} catch (IOException e) {
 			// Something went wrong with the communication
