@@ -16,7 +16,7 @@ public class CrawledModel {
 	public static final String META_CRAWLED_DATE = "crawledDate";
 	public static final String META_VERSION_DATE = "versionDate";
 	public static final String META_SOURCE = "source";
-	public static final String META_TYPE = "type";
+//	public static final String META_TYPE = "type";
 	
 	public static final String SOURCE_PMR2 = "PMR2";
 	public static final String SOURCE_BIOMODELS_DB = "BMDB";

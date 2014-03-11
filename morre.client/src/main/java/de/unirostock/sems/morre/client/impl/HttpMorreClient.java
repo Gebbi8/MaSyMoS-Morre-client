@@ -349,7 +349,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	@Override
-	public boolean addModel(CrawledModel model) throws MorreClientException, MorreCommunicationException {
+	public boolean addModel(CrawledModel model) throws MorreClientException, MorreCommunicationException, MorreException {
 
 		String result = performServiceQuery(SERVICE_ADD_MODEL, model);
 		System.out.println("----");
@@ -357,8 +357,11 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		System.out.println("----");
 		log.debug(result);
 		
-		// TODO api is still incomplete...
-		return true;
+		Map<String, String> parsedResult = parseServiceResult(result, singleMapType);
+		if( parsedResult != null && parsedResult.get("ok").toLowerCase().equals("true") )
+			return true;
+		else
+			return false;
 	}
 
 	private <R> String performServiceQuery( String queryType, R parameter ) throws MorreClientException, MorreCommunicationException {
