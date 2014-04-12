@@ -16,7 +16,6 @@ import java.util.Map.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -64,26 +63,26 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private Type crawledModelType;
 	private Type singleMapType;
 
-	private final String REST_URL_QUERY = "query/";
-	private final String REST_URL_CRAWLER = "service/";
+	private static final String REST_URL_QUERY = "query/";
+	private static final String REST_URL_CRAWLER = "service/";
 
-	private final String KEY_KEYWORDS = "keywords";
-	private final String KEY_FEATURES = "features";
+	private static final String KEY_KEYWORDS = "keywords";
+	private static final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
 
-	private final String ERROR_KEY_RESULTS = "#Results";
-	private final String ERROR_KEY_EXCEPTION = "Exception";
+	private static final String ERROR_KEY_RESULTS = "#Results";
+	private static final String ERROR_KEY_EXCEPTION = "Exception";
 
 	// ----
 
-	private final String SERVICE_GET_MODEL_HISTORY = "get_model_history";
-	private final String SERVICE_GET_MODEL_VERSION = "get_model_version";
-	private final String SERVICE_GET_LATEST_MODEL = "get_model";
+	private static final String SERVICE_GET_MODEL_HISTORY = "get_model_history";
+	private static final String SERVICE_GET_MODEL_VERSION = "get_model_version";
+	private static final String SERVICE_GET_LATEST_MODEL = "get_model";
 	private static final String SERVICE_ADD_MODEL = "add_model";
 
-	private final String SKEY_FILEID = "fileId";
-	private final String SKEY_VERSIONID = "versionId";
-	private final String SKEY_EXCEPTION = "Exception";
+	private static final String SKEY_FILEID = "fileId";
+	private static final String SKEY_VERSIONID = "versionId";
+	private static final String SKEY_EXCEPTION = "Exception";
 
 	public HttpMorreClient(String morreUrl) throws MalformedURLException {
 		// define urls
@@ -351,7 +350,9 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	@Override
 	public boolean addModel(CrawledModel model) throws MorreClientException, MorreCommunicationException, MorreException {
 
-		String result = performServiceQuery(SERVICE_ADD_MODEL, model);
+		String result = performServiceQuery(SERVICE_ADD_MODEL, model, crawledModelType);
+		log.trace(result);
+		
 		System.out.println("----");
 		System.out.println(result);
 		System.out.println("----");
@@ -365,11 +366,19 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 
 	private <R> String performServiceQuery( String queryType, R parameter ) throws MorreClientException, MorreCommunicationException {
+		return performServiceQuery(queryType, parameter, null);
+	}
+	
+	private <R> String performServiceQuery( String queryType, R parameter, Type parameterType ) throws MorreClientException, MorreCommunicationException {
 
 		try {
 
 			// serialize the parameter
-			String jsonFeatures = gson.toJson( parameter );
+			String jsonFeatures = null;
+			if( parameterType != null )
+				jsonFeatures = gson.toJson(parameter, parameterType);
+			else
+				jsonFeatures = gson.toJson( parameter );
 
 			// generates the request
 			String requestUrl = new URL(serviceUrl, queryType).toString();
@@ -377,6 +386,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			request.addHeader( "Accept", ContentType.APPLICATION_JSON.toString());
 			// adds the json string as package
 			System.out.println(jsonFeatures);
+			log.trace(jsonFeatures);
 			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
 
 			// execute!

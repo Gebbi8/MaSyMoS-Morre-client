@@ -1,13 +1,24 @@
 package de.unirostock.sems.morre.client.dataholder;
 
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Dataholder Object for a model, which is going to be inserted into the database with the {@link de.unirostock.sems.morre.client.MorreCrawlerInterface MorreCrawlerInterface}
  *
  */
-public class CrawledModel {
+public class CrawledModel implements Serializable {
+	
+	private static final long serialVersionUID = 2002369276523885214L;
+	
+	private static Gson gson = null;
+	private static Type metaType = new TypeToken<Map<String, String>>(){}.getType();
 	
 	public static final String TYPE_CELLML	= "CELLML";
 	public static final String TYPE_SBML	= "SBML";
@@ -25,8 +36,10 @@ public class CrawledModel {
 	private String versionId;
 	private String xmldoc;
 	private String modelType;
-	private Map<String,List<String>> parentMap;
-	private Map<String, String> metaMap;
+	
+	private Map<String,List<String>> parentMap = new HashMap<String, List<String>>();
+	private Map<String, String> metaMap = new HashMap<String, String>(5);
+	//private String meta;
 	
 	public CrawledModel(String fileId, String versionId, String xmldoc,
 			Map<String, List<String>> parentMap, Map<String, String> metaMap, String modelType) {
@@ -77,7 +90,22 @@ public class CrawledModel {
 	public void setModelType(String modelType) {
 		this.modelType = modelType;
 	}
-
+	
+	/**
+	 * Sets the entire meta map as json string
+	 * 
+	 * @param meta
+	 */
+	public void setMeta(String meta) {
+		
+		// creates gson instance, if necessary
+		if( gson == null )
+			gson = new Gson();
+		
+		// parses the meta string into a map
+		metaMap = gson.fromJson(meta, metaType);
+	}
+	
 	@Override
 	public String toString() {
 		return "CrawledModel [fileId=" + fileId + ", versionId=" + versionId
