@@ -13,8 +13,9 @@ public class ModelResult extends Model implements Comparable<ModelResult>, Seria
 	
 	private float score;
 	
-	public ModelResult(String modelName, float score, String modelID, long databaseID, String documentURI, String filename) {
-		super(modelName, modelID, databaseID, documentURI, filename);
+	
+	public ModelResult(String modelName, String modelID, String versionID, String xmldoc, String documentURI, String filename, float score) {
+		super(modelName, modelID, versionID, xmldoc, documentURI, filename);
 		this.score = score;
 	}
 

@@ -13,20 +13,21 @@ public class Model implements Serializable {
 	
 	protected String modelName;
 	protected String modelID;
-	protected long databaseID;
+	protected String versionID;
+	protected String xmldoc;
 	protected String documentURI;
 	protected String filename;
 	
-	
-	public Model(String modelName, String modelID, long databaseID, String documentURI, String filename) {
+	public Model(String modelName, String modelID, String versionID,
+			String xmldoc, String documentURI, String filename) {
 		super();
 		this.modelName = modelName;
 		this.modelID = modelID;
-		this.databaseID = databaseID;
+		this.versionID = versionID;
+		this.xmldoc = xmldoc;
 		this.documentURI = documentURI;
 		this.filename = filename;
 	}
-
 
 	public String getModelName() {
 		return modelName;
@@ -45,17 +46,6 @@ public class Model implements Serializable {
 	public void setModelID(String modelId) {
 		this.modelID = modelId;
 	}
-
-
-	public long getDatabaseID() {
-		return databaseID;
-	}
-
-
-	public void setDatabaseID(long databaseId) {
-		this.databaseID = databaseId;
-	}
-
 
 	public String getDocumentURI() {
 		return documentURI;
@@ -76,17 +66,31 @@ public class Model implements Serializable {
 		this.filename = filename;
 	}
 
+	public String getVersionID() {
+		return versionID;
+	}
+
+	public void setVersionID(String versionID) {
+		this.versionID = versionID;
+	}
+
+	public String getXmldoc() {
+		return xmldoc;
+	}
+
+	public void setXmldoc(String xmldoc) {
+		this.xmldoc = xmldoc;
+	}
+
 	@Override
 	public String toString() {
 		return "ModelResult [modelName=" + modelName + ", modelId=" + modelID + "]";
 	}
 
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (databaseID ^ (databaseID >>> 32));
 		result = prime * result
 				+ ((documentURI == null) ? 0 : documentURI.hashCode());
 		result = prime * result
@@ -94,9 +98,11 @@ public class Model implements Serializable {
 		result = prime * result + ((modelID == null) ? 0 : modelID.hashCode());
 		result = prime * result
 				+ ((modelName == null) ? 0 : modelName.hashCode());
+		result = prime * result
+				+ ((versionID == null) ? 0 : versionID.hashCode());
+		result = prime * result + ((xmldoc == null) ? 0 : xmldoc.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -107,8 +113,6 @@ public class Model implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Model other = (Model) obj;
-		if (databaseID != other.databaseID)
-			return false;
 		if (documentURI == null) {
 			if (other.documentURI != null)
 				return false;
@@ -129,7 +133,18 @@ public class Model implements Serializable {
 				return false;
 		} else if (!modelName.equals(other.modelName))
 			return false;
+		if (versionID == null) {
+			if (other.versionID != null)
+				return false;
+		} else if (!versionID.equals(other.versionID))
+			return false;
+		if (xmldoc == null) {
+			if (other.xmldoc != null)
+				return false;
+		} else if (!xmldoc.equals(other.xmldoc))
+			return false;
 		return true;
 	}
 
+	
 }
