@@ -16,17 +16,17 @@ public class Model implements Serializable {
 	protected String versionID;
 	protected String xmldoc;
 	protected String documentURI;
-	protected String filename;
+	protected String fileID;
 	
 	public Model(String modelName, String modelID, String versionID,
-			String xmldoc, String documentURI, String filename) {
+			String xmldoc, String documentURI, String fileID) {
 		super();
 		this.modelName = modelName;
 		this.modelID = modelID;
 		this.versionID = versionID;
 		this.xmldoc = xmldoc;
 		this.documentURI = documentURI;
-		this.filename = filename;
+		this.fileID = fileID;
 	}
 
 	public String getModelName() {
@@ -57,13 +57,13 @@ public class Model implements Serializable {
 	}
 
 
-	public String getFilename() {
-		return filename;
+	public String getFileID() {
+		return fileID;
 	}
 
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFileID(String filename) {
+		this.fileID = filename;
 	}
 
 	public String getVersionID() {
@@ -94,7 +94,7 @@ public class Model implements Serializable {
 		result = prime * result
 				+ ((documentURI == null) ? 0 : documentURI.hashCode());
 		result = prime * result
-				+ ((filename == null) ? 0 : filename.hashCode());
+				+ ((fileID == null) ? 0 : fileID.hashCode());
 		result = prime * result + ((modelID == null) ? 0 : modelID.hashCode());
 		result = prime * result
 				+ ((modelName == null) ? 0 : modelName.hashCode());
@@ -118,10 +118,10 @@ public class Model implements Serializable {
 				return false;
 		} else if (!documentURI.equals(other.documentURI))
 			return false;
-		if (filename == null) {
-			if (other.filename != null)
+		if (fileID == null) {
+			if (other.fileID != null)
 				return false;
-		} else if (!filename.equals(other.filename))
+		} else if (!fileID.equals(other.fileID))
 			return false;
 		if (modelID == null) {
 			if (other.modelID != null)
