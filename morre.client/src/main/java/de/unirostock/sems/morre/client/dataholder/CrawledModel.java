@@ -17,8 +17,8 @@ public class CrawledModel implements Serializable {
 	
 	private static final long serialVersionUID = 2002369276523885214L;
 	
-	private static Gson gson = null;
-	private static Type metaType = new TypeToken<Map<String, String>>(){}.getType();
+	private transient static Gson gson = null;
+	private transient static Type metaType = new TypeToken<Map<String, String>>(){}.getType();
 	
 	public static final String TYPE_CELLML	= "CELLML";
 	public static final String TYPE_SBML	= "SBML";
