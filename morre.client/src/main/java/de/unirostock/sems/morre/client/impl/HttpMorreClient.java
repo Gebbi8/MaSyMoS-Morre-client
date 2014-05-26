@@ -344,6 +344,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		parameter.put(SKEY_FILEID, fileId);
 
 		String result = performServiceQuery(SERVICE_GET_LATEST_MODEL, parameter);
+		System.out.println(result);
 		return parseServiceResult(result, crawledModelType);
 	}
 

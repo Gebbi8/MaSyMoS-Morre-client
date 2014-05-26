@@ -14,33 +14,34 @@ import com.google.gson.reflect.TypeToken;
  *
  */
 public class CrawledModel implements Serializable {
-	
+
 	private static final long serialVersionUID = 2002369276523885214L;
-	
+
 	private transient static Gson gson = null;
 	private transient static Type metaType = new TypeToken<Map<String, String>>(){}.getType();
-	
+
 	public static final String TYPE_CELLML	= "CELLML";
 	public static final String TYPE_SBML	= "SBML";
 	public static final String TYPE_SEDML	= "SEDML";
-	
+
 	public static final String META_CRAWLED_DATE = "crawledDate";
 	public static final String META_VERSION_DATE = "versionDate";
 	public static final String META_SOURCE = "source";
-//	public static final String META_TYPE = "type";
-	
+	//	public static final String META_TYPE = "type";
+
 	public static final String SOURCE_PMR2 = "PMR2";
 	public static final String SOURCE_BIOMODELS_DB = "BMDB";
-	
+
 	private String fileId;
 	private String versionId;
 	private String xmldoc;
 	private String modelType;
-	
+	private String meta;
+
 	private Map<String,List<String>> parentMap = new HashMap<String, List<String>>();
 	private Map<String, String> metaMap = new HashMap<String, String>(5);
 	//private String meta;
-	
+
 	public CrawledModel(String fileId, String versionId, String xmldoc,
 			Map<String, List<String>> parentMap, Map<String, String> metaMap, String modelType) {
 		super();
@@ -53,6 +54,9 @@ public class CrawledModel implements Serializable {
 	}
 
 	public Map<String, String> getMetaMap() {
+		if( meta != null && !meta.isEmpty() && metaMap == null )
+			processMeta();
+		
 		return metaMap;
 	}
 	public void setMetaMap(Map<String, String> metaMap) {
@@ -90,22 +94,24 @@ public class CrawledModel implements Serializable {
 	public void setModelType(String modelType) {
 		this.modelType = modelType;
 	}
-	
-	/**
-	 * Sets the entire meta map as json string
-	 * 
-	 * @param meta
-	 */
+
 	public void setMeta(String meta) {
-		
+		this.meta = meta;
+	}
+
+	public String getMeta() {
+		return meta;
+	}
+
+	protected void processMeta() {
 		// creates gson instance, if necessary
 		if( gson == null )
 			gson = new Gson();
-		
+
 		// parses the meta string into a map
 		metaMap = gson.fromJson(meta, metaType);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "CrawledModel [fileId=" + fileId + ", versionId=" + versionId
