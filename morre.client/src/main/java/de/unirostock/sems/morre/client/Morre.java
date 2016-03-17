@@ -38,6 +38,17 @@ public interface Morre extends Serializable {
 	 * @throws MorreClientException
 	 * @throws MorreCommunicationException
 	 */
+	public List<ModelResult> aggregatedModelQuery( String query, String aggregationType ) throws MorreException, MorreClientException, MorreCommunicationException;
+	
+	/**
+	 * Returns the available features for a given query type and an aggregation type
+	 * 
+	 * @param all {@link de.unirostock.sems.morre.client.QueryType queryTypes}
+	 * @return List of Strings with all available feature keywords
+	 * @throws MorreException
+	 * @throws MorreClientException
+	 * @throws MorreCommunicationException
+	 */
 	public List<String> getQueryFeatures( String queryType ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
@@ -65,6 +76,18 @@ public interface Morre extends Serializable {
 	 * @throws MorreCommunicationException
 	 */
 	public List<ModelResult> doSimpleModelQuery( String queryType, String keyword ) throws MorreException, MorreClientException, MorreCommunicationException;
+	
+	/**
+	 * Searches for a Person on the basis of the given features
+	 * The available features can be retrieved by {@link #getQueryFeatures(String) getQueryFeatures}
+	 * 
+	 * @param features
+	 * @return List of {@link de.unirostock.sems.morre.client.dataholder.PersonResult PersonResults}
+	 * @throws MorreException
+	 * @throws MorreClientException
+	 * @throws MorreCommunicationException
+	 */
+	public List<ModelResult> doSimpleAggregatedModelQuery(String queryType, String keyword, String aggregationType) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
 	 * Searches for a Person on the basis of the given features

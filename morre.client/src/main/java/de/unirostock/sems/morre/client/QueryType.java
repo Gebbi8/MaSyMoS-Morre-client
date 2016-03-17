@@ -10,6 +10,7 @@ package de.unirostock.sems.morre.client;
 public class QueryType {
 
 	public final static String MODEL_QUERY = "model_query";
+	public final static String AGGREGATED_MODEL_QUERY = "aggregated_model_query";
 	
 	public final static String CELLML_MODEL_QUERY = "cellml_model_query";
 	public final static String SIMPLE_CELLML_MODEL_QUERY = "simple_cellml_model_query";

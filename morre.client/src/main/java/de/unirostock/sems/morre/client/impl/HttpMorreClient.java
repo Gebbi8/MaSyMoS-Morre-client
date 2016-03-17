@@ -69,6 +69,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private static final String KEY_KEYWORDS = "keywords";
 	private static final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
+	private static final String AGGREGATION_TYPE = "aggregationType";
 
 	private static final String ERROR_KEY_RESULTS = "#Results";
 	private static final String ERROR_KEY_EXCEPTION = "Exception";
@@ -109,6 +110,11 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	@Override
 	public List<ModelResult> modelQuery(String query) throws MorreClientException, MorreCommunicationException, MorreException {
 		return doSimpleModelQuery(QueryType.MODEL_QUERY, query);
+	}
+	
+	@Override
+	public List<ModelResult> aggregatedModelQuery(String query, String aggregationType) throws MorreClientException, MorreCommunicationException, MorreException {
+		return doSimpleAggregatedModelQuery(QueryType.AGGREGATED_MODEL_QUERY, query, aggregationType);
 	}
 
 	@Override
@@ -154,6 +160,13 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	public List<ModelResult> doSimpleModelQuery(String queryType, String keyword) throws MorreException ,MorreClientException ,MorreCommunicationException {
 		// perform the query
 		String resultString = performSimpleQuery(queryType, keyword);
+		return parseQueryResult(resultString, modelResultType);
+	}
+	
+	@Override
+	public List<ModelResult> doSimpleAggregatedModelQuery(String queryType, String keyword, String aggregationType) throws MorreException ,MorreClientException ,MorreCommunicationException {
+		// perform the query
+		String resultString = performSimpleAggregatedQuery(queryType, keyword, aggregationType);
 		return parseQueryResult(resultString, modelResultType);
 	}
 
@@ -284,6 +297,48 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 			// Put in the Keyword
 			parameter.put(KEY_SINGLE_KEYWORD, keyword);
+			String jsonFeatures = gson.toJson( parameter );
+
+			// generates the request
+			String requestUrl = new URL(queryUrl, queryType).toString();
+			HttpPost request = new HttpPost( requestUrl );
+			// adds the json string as package
+			request.setEntity( new StringEntity(jsonFeatures, ContentType.APPLICATION_JSON) );
+
+			// execute!
+			HttpResponse response = httpClient.execute(request);
+
+			// reads in the result
+			StringBuilder result = new StringBuilder();
+			BufferedReader resultReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			String line = "";
+			while ((line = resultReader.readLine()) != null) {
+				//append              
+				result.append(line);
+			}
+
+			return result.toString();
+		} catch (MalformedURLException e) {
+			// Wrong formatted URL. We can definitely blame the library user for this.
+			// Exception the awesome library developer uses it by himself, than we have to blame someone else... ;)
+			throw new MorreClientException("Exception while building the request url", e);
+		} catch (IOException e) {
+			// Something went wrong with the communication
+			throw new MorreCommunicationException("Error while HTTP Request.", e);
+		}
+
+	}
+	
+	private String performSimpleAggregatedQuery( String queryType, String keyword, String aggregationType ) throws MorreClientException, MorreCommunicationException {
+
+		try {
+			// Serialize the feature set
+
+			HashMap<String, String> parameter = new HashMap<>();
+
+			// Put in the Keyword
+			parameter.put(KEY_SINGLE_KEYWORD, keyword);
+			parameter.put(AGGREGATION_TYPE, aggregationType);
 			String jsonFeatures = gson.toJson( parameter );
 
 			// generates the request
