@@ -38,7 +38,7 @@ public interface Morre extends Serializable {
 	 * @throws MorreClientException
 	 * @throws MorreCommunicationException
 	 */
-	public List<ModelResult> aggregatedModelQuery( String query, String aggregationType ) throws MorreException, MorreClientException, MorreCommunicationException;
+	public List<ModelResult> aggregatedModelQuery( String query, String aggregationType, String rankerWeights ) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
 	 * Returns the available features for a given query type and an aggregation type
@@ -87,7 +87,7 @@ public interface Morre extends Serializable {
 	 * @throws MorreClientException
 	 * @throws MorreCommunicationException
 	 */
-	public List<ModelResult> doSimpleAggregatedModelQuery(String queryType, String keyword, String aggregationType) throws MorreException, MorreClientException, MorreCommunicationException;
+	public List<ModelResult> doSimpleAggregatedModelQuery(String queryType, String keyword, String aggregationType, String rankersWeights) throws MorreException, MorreClientException, MorreCommunicationException;
 	
 	/**
 	 * Searches for a Person on the basis of the given features
