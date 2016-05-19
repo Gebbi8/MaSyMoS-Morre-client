@@ -70,6 +70,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private static final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
 	private static final String AGGREGATION_TYPE = "aggregationType";
+	private static final String RANKERS_WEIGHTS = "rankersWeights";
 
 	private static final String ERROR_KEY_RESULTS = "#Results";
 	private static final String ERROR_KEY_EXCEPTION = "Exception";
@@ -113,8 +114,8 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 	
 	@Override
-	public List<ModelResult> aggregatedModelQuery(String query, String aggregationType) throws MorreClientException, MorreCommunicationException, MorreException {
-		return doSimpleAggregatedModelQuery(QueryType.AGGREGATED_MODEL_QUERY, query, aggregationType);
+	public List<ModelResult> aggregatedModelQuery(String query, String aggregationType, String rankersWeights) throws MorreClientException, MorreCommunicationException, MorreException {
+		return doSimpleAggregatedModelQuery(QueryType.AGGREGATED_MODEL_QUERY, query, aggregationType, rankersWeights);
 	}
 
 	@Override
@@ -164,9 +165,9 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	}
 	
 	@Override
-	public List<ModelResult> doSimpleAggregatedModelQuery(String queryType, String keyword, String aggregationType) throws MorreException ,MorreClientException ,MorreCommunicationException {
+	public List<ModelResult> doSimpleAggregatedModelQuery(String queryType, String keyword, String aggregationType, String rankersWeights) throws MorreException ,MorreClientException ,MorreCommunicationException {
 		// perform the query
-		String resultString = performSimpleAggregatedQuery(queryType, keyword, aggregationType);
+		String resultString = performSimpleAggregatedQuery(queryType, keyword, aggregationType, rankersWeights);
 		return parseQueryResult(resultString, modelResultType);
 	}
 
@@ -329,7 +330,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	}
 	
-	private String performSimpleAggregatedQuery( String queryType, String keyword, String aggregationType ) throws MorreClientException, MorreCommunicationException {
+	private String performSimpleAggregatedQuery( String queryType, String keyword, String aggregationType, String rankersWeights ) throws MorreClientException, MorreCommunicationException {
 
 		try {
 			// Serialize the feature set
@@ -339,6 +340,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 			// Put in the Keyword
 			parameter.put(KEY_SINGLE_KEYWORD, keyword);
 			parameter.put(AGGREGATION_TYPE, aggregationType);
+			parameter.put(RANKERS_WEIGHTS, rankersWeights);
 			String jsonFeatures = gson.toJson( parameter );
 
 			// generates the request

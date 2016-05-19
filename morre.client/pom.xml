@@ -23,8 +23,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.build.sourceJavaVersion>1.7</project.build.sourceJavaVersion>
-		<project.build.destinationJavaVersion>1.7</project.build.destinationJavaVersion>
+		<project.build.sourceJavaVersion>1.8</project.build.sourceJavaVersion>
+		<project.build.destinationJavaVersion>1.8</project.build.destinationJavaVersion>
 	</properties>
 
 	<dependencies>
