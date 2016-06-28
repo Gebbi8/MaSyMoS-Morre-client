@@ -64,7 +64,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private Type singleMapType;
 
 	private static final String REST_URL_QUERY = "query/";
-	private static final String REST_URL_CRAWLER = "service/";
+	private static final String REST_URL_CRAWLER = "model_crawler_service/";
 
 	private static final String KEY_KEYWORDS = "keywords";
 	private static final String KEY_FEATURES = "features";
@@ -81,6 +81,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	private static final String SERVICE_GET_MODEL_VERSION = "get_model_version";
 	private static final String SERVICE_GET_LATEST_MODEL = "get_model";
 	private static final String SERVICE_ADD_MODEL = "add_model";
+	private static final String SERVICE_ADD_MODEL_VERSION = "add_model_version";
 
 	private static final String SKEY_FILEID = "fileId";
 	private static final String SKEY_VERSIONID = "versionId";
@@ -408,7 +409,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 	@Override
 	public boolean addModel(CrawledModel model) throws MorreClientException, MorreCommunicationException, MorreException {
 
-		String result = performServiceQuery(SERVICE_ADD_MODEL, model, crawledModelType);
+		String result = performServiceQuery(SERVICE_ADD_MODEL_VERSION, model, crawledModelType);
 		log.trace(result);
 		
 		System.out.println("----");
