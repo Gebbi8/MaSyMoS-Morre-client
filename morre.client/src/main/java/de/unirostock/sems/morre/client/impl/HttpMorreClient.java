@@ -49,7 +49,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	private URL morreUrl = null;
 	private URL queryUrl = null;
-	private URL serviceUrl = null;
+	
 	private HttpClient httpClient = null;
 	private Gson gson = null;
 
@@ -65,7 +65,8 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	private static final String REST_URL_QUERY = "query/";
 	private static final String REST_URL_CRAWLER = "model_crawler_service/";
-
+	private static final String REST_URL_UPDATE = "model_update_service/";
+	
 	private static final String KEY_KEYWORDS = "keywords";
 	private static final String KEY_FEATURES = "features";
 	private static final String KEY_SINGLE_KEYWORD = "keyword";
@@ -77,11 +78,12 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	// ----
 
-	private static final String SERVICE_GET_MODEL_HISTORY = "get_model_history";
-	private static final String SERVICE_GET_MODEL_VERSION = "get_model_version";
-	private static final String SERVICE_GET_LATEST_MODEL = "get_model";
-	private static final String SERVICE_ADD_MODEL = "add_model";
-	private static final String SERVICE_ADD_MODEL_VERSION = "add_model_version";
+	private static final String SERVICE_GET_MODEL_HISTORY = REST_URL_CRAWLER + "get_model_history";
+	private static final String SERVICE_GET_MODEL_VERSION = REST_URL_CRAWLER + "get_model_version";
+	private static final String SERVICE_GET_LATEST_MODEL = REST_URL_CRAWLER + "get_model";
+	private static final String SERVICE_ADD_MODEL = REST_URL_UPDATE + "add_model";
+	private static final String SERVICE_ADD_MODEL_VERSION = REST_URL_UPDATE + "add_model_version";
+	private static final String SERVICE_DELETE_MODEL = REST_URL_UPDATE + "delete_model";
 
 	private static final String SKEY_FILEID = "fileId";
 	private static final String SKEY_VERSIONID = "versionId";
@@ -91,7 +93,6 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		// define urls
 		this.morreUrl = new URL(morreUrl);
 		this.queryUrl = new URL(this.morreUrl, REST_URL_QUERY);
-		this.serviceUrl = new URL(this.morreUrl, REST_URL_CRAWLER);
 
 		httpClient = HttpClientBuilder.create().build();
 		gson = new Gson();
@@ -382,7 +383,6 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		parameter.put(SKEY_FILEID, fileId);
 
 		String result = performServiceQuery(SERVICE_GET_MODEL_HISTORY, parameter);
-		List<String> resultList = null;
 		return parseServiceResult(result, singleListType);
 	}
 
@@ -440,7 +440,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 				jsonFeatures = gson.toJson( parameter );
 
 			// generates the request
-			String requestUrl = new URL(serviceUrl, queryType).toString();
+			String requestUrl = new URL(morreUrl, queryType).toString();
 			HttpPost request = new HttpPost( requestUrl );
 			request.addHeader( "Accept", ContentType.APPLICATION_JSON.toString());
 			// adds the json string as package
