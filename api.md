@@ -102,4 +102,5 @@ Map<String, List<String>> parentMap = new HashMap<>();
 parentMap.put("fileID", Arrays.asList("version-2"));
 
 CrawledModel model = new CrawledModel("fileID", "version-3", "http://example.org/model/version3.xml", parentMap, null, CrawledModel.TYPE_SBML);
+morre.addModel(model);
 ```
