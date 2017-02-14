@@ -46,6 +46,8 @@ Once determined, these features can than be used to construct complex queries.
 
 ```java
 import de.unirostock.sems.morre.client.FeatureSet;
+import de.unirostock.sems.morre.client.dataholder.ModelResult;
+import de.unirostock.sems.morre.client.dataholder.PersonResult;
 
 FeatureSet features = new FeatureSet();
 features.set("FAMILYNAME", "Lloyd");
@@ -56,3 +58,48 @@ List<ModelResult> modelResult = morre.doModelQuery(QueryType.PERSON_MODEL_QUERY,
 List<PersonResult> personResult = doPersonQuery(features);
 ```
 
+Push models to MaSyMoS-Morre
+----------------------------
+
+To push models to Morre it is neccessary to address a different interface. This interface also allows to query for models and
+versions of models based on a `fileID` and `versionID`, which are artificial identifier used to identify a collection of versions of the same model (only `fileID`) or a specific version of a model (`fileID` and `versionID`).
+The information returned about a model are stored within a `CrawledModel` dataholder, which contains meta information.
+
+```java
+import de.unirostock.sems.morre.client.impl.HttpMorreClient;
+import de.unirostock.sems.morre.client.MorreCrawlerInterface;
+
+MorreCrawlerInterface morre = new HttpMorreClient( "http://example.org:7474/morre/" );
+```
+
+### Get all versions of a model
+```java
+List<String> versionIds = morre.getModelHistory("fileID");
+```
+
+### Get one version of a model
+```java
+import de.unirostock.sems.morre.client.dataholder.CrawledModel;
+
+CrawledModel model;
+
+// get one specific version
+model = morre.getModelVersion("fileID", "version-2");
+// get the latest version
+model = morre.getLatestModelVersion("fileID");
+```
+
+### Push a model to MaSyMoS
+
+To push a model to MaSyMoS the `CrawledModel` dataholder must be populated with all available/relevant meta information.
+However mandatory fields are `fileId`, `versionId`, and `xmldoc`. Last one needs to contain a HTTP URL, pointing to the model file.
+The `parentMap` contains all direct predecessors of the pushed model, in the format `fileID1 -> [versionID1, versionID2], ...`.
+
+```java
+import de.unirostock.sems.morre.client.dataholder.CrawledModel;
+
+Map<String, List<String>> parentMap = new HashMap<>();
+parentMap.put("fileID", Arrays.asList("version-2"));
+
+CrawledModel model = new CrawledModel("fileID", "version-3", "http://example.org/model/version3.xml", parentMap, null, CrawledModel.TYPE_SBML);
+```
