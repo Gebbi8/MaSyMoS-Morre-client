@@ -239,6 +239,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 			}
 			catch (JsonSyntaxException e2) {
+				System.out.println (resultString);
 				// second attempt to parse failed, two. Now our fates rests in God's hands... (... or we just throw an exception)
 				throw new MorreCommunicationException("Can not even parse the error message. Check for corrupt JSON!", e);
 			}
@@ -296,7 +297,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		try {
 			// Serialize the feature set
 
-			HashMap<String, String> parameter = new HashMap<>();
+			HashMap<String, String> parameter = new HashMap<String, String>();
 
 			// Put in the Keyword
 			parameter.put(KEY_SINGLE_KEYWORD, keyword);
@@ -337,7 +338,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 		try {
 			// Serialize the feature set
 
-			HashMap<String, String> parameter = new HashMap<>();
+			HashMap<String, String> parameter = new HashMap<String, String>();
 
 			// Put in the Keyword
 			parameter.put(KEY_SINGLE_KEYWORD, keyword);
@@ -379,7 +380,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	@Override
 	public List<String> getModelHistory(String fileId) throws MorreClientException, MorreCommunicationException, MorreException {
-		Map<String, String> parameter = new HashMap<>();
+		Map<String, String> parameter = new HashMap<String, String>();
 		parameter.put(SKEY_FILEID, fileId);
 
 		String result = performServiceQuery(SERVICE_GET_MODEL_HISTORY, parameter);
@@ -388,7 +389,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	@Override
 	public CrawledModel getModelVersion(String fileId, String versionId) throws MorreClientException, MorreCommunicationException, MorreException {
-		Map<String, String> parameter = new HashMap<>();
+		Map<String, String> parameter = new HashMap<String, String>();
 		parameter.put(SKEY_FILEID, fileId);
 		parameter.put(SKEY_VERSIONID, versionId);
 
@@ -398,7 +399,7 @@ public class HttpMorreClient implements Morre, MorreCrawlerInterface, Serializab
 
 	@Override
 	public CrawledModel getLatestModelVersion(String fileId) throws MorreClientException, MorreCommunicationException, MorreException {
-		Map<String, String> parameter = new HashMap<>();
+		Map<String, String> parameter = new HashMap<String, String>();
 		parameter.put(SKEY_FILEID, fileId);
 
 		String result = performServiceQuery(SERVICE_GET_LATEST_MODEL, parameter);

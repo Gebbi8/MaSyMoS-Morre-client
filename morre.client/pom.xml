@@ -2,24 +2,51 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>de.unirostock.sems</groupId>
+	<groupId>de.uni-rostock.sbi</groupId>
 	<artifactId>morre.client</artifactId>
-	<version>0.0.9-SNAPSHOT</version>
+	<version>0.0.9</version>
 	<packaging>jar</packaging>
-
+	<description>Client library for Masymos/Morre</description>
 	<name>morre.client</name>
-	<url>http://sems.uni-rostock.de</url>
-
+	<url>https://semsproject.github.io/MaSyMoS-Morre-client/</url>
+	<licenses>
+		<license>
+			<name>The Clear BSD License</name>
+			<url>http://directory.fsf.org/wiki/License:ClearBSD</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
 	<scm>
-		<connection>GIT</connection>
-		<url>ssh://sems.uni-rostock.de/morre-client</url>
-		<developerConnection>Martin Peters</developerConnection>
+		<connection>https://github.com/binfalse/morre-client.git</connection>
+		<url>https://github.com/binfalse/morre-client</url>
+		<developerConnection>scm:git:ssh://github.com:binfalse/morre-client.git</developerConnection>
 	</scm>
 
 	<organization>
 		<name>SEMS (Simulation Experiment Management for Systems Biology)</name>
 		<url>http://sems.uni-rostock.de</url>
 	</organization>
+	<developers>
+		<developer>
+			<id>martinP</id>
+			<name>Martin Peters</name>
+			<email>martin@freakybytes.net</email>
+		</developer>
+		<developer>
+			<id>mariam</id>
+			<name>Mariam Nassar</name>
+			<email>mariam.nassar@uni-rostock.de</email>
+		</developer>
+		<developer>
+			<id>martin</id>
+			<name>Martin Scharm</name>
+			<email>martin@binfalse.de</email>
+			<roles>
+				<role>Java Developer</role>
+			</roles>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,6 +85,17 @@
 		
 	</dependencies>
 	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+	
 	<build>
 		<finalName>MorreClient</finalName>
 
@@ -72,107 +110,72 @@
 					<target>${project.build.destinationJavaVersion}</target>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles>
+					<goals>deploy</goals>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
 		</plugins>
 
-		<extensions>
-			<!-- enables ssh/scp support for maven deployment -->
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh-external</artifactId>
-				<version>2.10</version>
-			</extension>
-		</extensions>
-
 	</build>
-
-	<profiles>
-		<!-- deployment profile -->
-		<profile>
-			<id>release</id>
-			<!-- build plugin configuration for the deploy -->
-			<!-- It is not necessary to include the sources and javadocs every time the project compiles -->
-			<build>
-				<plugins>
-					<!-- attach sources -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-
-						<configuration>
-							<attach>true</attach>
-						</configuration>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-
-					<!-- attach javadoc -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		<profile>
-			<id>source</id>
-			<!-- build plugin configuration for the deploy -->
-			<!-- It is not necessary to include the sources and javadocs every time the project compiles -->
-			<build>
-				<plugins>
-					<!-- attach sources -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-
-						<configuration>
-							<attach>true</attach>
-						</configuration>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
-
-	<distributionManagement>
-		<downloadUrl>http://mvn.sems.uni-rostock.de</downloadUrl>
-		<snapshotRepository>
-			<uniqueVersion>true</uniqueVersion>
-			<id>sems-maven-repository</id>
-			<name>SEMS Maven Release Repository</name>
-			<url>scpexe://mvn.sems.uni-rostock.de:/home/stuff/web/mvn/snapshots/</url>
-			<layout>default</layout>
-		</snapshotRepository>
-
-		<repository>
-			<uniqueVersion>true</uniqueVersion>
-			<id>sems-maven-repository</id>
-			<name>Enterprise Systems Maven Repository</name>
-			<url>scpexe://mvn.sems.uni-rostock.de:/home/stuff/web/mvn/releases/</url>
-			<layout>default</layout>
-		</repository>
-	</distributionManagement>
 	
 </project>

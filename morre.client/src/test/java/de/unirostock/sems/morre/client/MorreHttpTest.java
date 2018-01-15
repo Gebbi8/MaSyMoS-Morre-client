@@ -19,17 +19,18 @@ import de.unirostock.sems.morre.client.exception.MorreCommunicationException;
 import de.unirostock.sems.morre.client.exception.MorreException;
 import de.unirostock.sems.morre.client.impl.HttpMorreClient;
 
-@RunWith(JUnit4.class)
+//@RunWith(JUnit4.class)
 public class MorreHttpTest {
 	
 	private Morre morre = null;
 	
-	@Before
+	//@Before
 	public void prepare() throws MalformedURLException {
+		// TODO the web interface is not running here anymore!
 		morre = new HttpMorreClient( "http://morre.sems.uni-rostock.de:7474/morre/" );
 	}
 	
-	@Test
+	//@Test
 	public void testGettingFeatures() throws MorreException, MalformedURLException, IllegalStateException, IOException {
 		
 		String[] queries = { QueryType.ANNOTATION_MODEL_QUERY, QueryType.ANNOTATION_QUERY, QueryType.CELLML_MODEL_QUERY, QueryType.MODEL_QUERY, QueryType.PERSON_MODEL_QUERY,
@@ -42,7 +43,7 @@ public class MorreHttpTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testSimpleModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		List<ModelResult> result = morre.modelQuery("novak");
@@ -51,7 +52,7 @@ public class MorreHttpTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testPersonModelQuery() throws MorreCommunicationException, MorreException {
 		
 		FeatureSet features = new FeatureSet();
@@ -62,7 +63,7 @@ public class MorreHttpTest {
 		System.out.println( result );
 	}
 	
-	@Test
+	//@Test
 	public void testCellMlModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		FeatureSet features = new FeatureSet();
@@ -74,7 +75,7 @@ public class MorreHttpTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testAnnotationModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		List<ModelResult> result = morre.doSimpleModelQuery(QueryType.ANNOTATION_MODEL_QUERY, "This study investigates the reverse mode of the Na/glucose cotransporter SGLT1. In giant excised inside-out membrane patches from Xenopus laevis oocytes expressing rabbit SGLT1, application of alpha-methyl D");
@@ -83,7 +84,7 @@ public class MorreHttpTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testPublicationModelQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		FeatureSet features = new FeatureSet();
@@ -95,7 +96,7 @@ public class MorreHttpTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testPersonQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		FeatureSet features = new FeatureSet();
@@ -107,7 +108,7 @@ public class MorreHttpTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testPublicationQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		FeatureSet features = new FeatureSet();
@@ -118,7 +119,7 @@ public class MorreHttpTest {
 		System.out.println( result );
 	}
 	
-	@Test
+	//@Test
 	public void testAnnotationQuery() throws MorreClientException, MorreCommunicationException, MorreException {
 		
 		List<AnnotationResult> result = morre.doAnnotationQuery("Lloyd");
