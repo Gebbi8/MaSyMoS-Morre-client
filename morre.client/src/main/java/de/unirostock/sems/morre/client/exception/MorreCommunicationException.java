@@ -19,7 +19,7 @@ public class MorreCommunicationException extends IOException {
 	}
 
 	public MorreCommunicationException(String message, Throwable cause) {
-		super(message, cause);
+		super(message + " caused by: " + cause.toString (), cause);
 	}
 
 }
