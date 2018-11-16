@@ -31,6 +31,7 @@ public class CrawledModel implements Serializable {
 
 	public static final String SOURCE_PMR2 = "PMR2";
 	public static final String SOURCE_BIOMODELS_DB = "BMDB";
+	public static final String SOURCE_LOCAL_DIR = "LD";
 
 	private String fileId;
 	private String versionId;

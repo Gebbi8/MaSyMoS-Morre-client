@@ -3,7 +3,7 @@
 
 	<groupId>de.uni-rostock.sbi</groupId>
 	<artifactId>morre.client</artifactId>
-	<version>0.0.11</version>
+	<version>0.0.12</version>
 	<packaging>jar</packaging>
 	<description>Client library for Masymos/Morre</description>
 	<name>morre.client</name>
